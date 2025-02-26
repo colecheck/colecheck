@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <a href="{% url 'school_app:home' %}" class="btn btn-danger mx-3 mt-3" type="button">Ir al Inicio</a>
+
+    <h1>Importar archivo Excel</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="archivo_excel" accept=".xlsx" required>
+        <button type="submit">Importar</button>
+    </form>
+{% endblock content %}

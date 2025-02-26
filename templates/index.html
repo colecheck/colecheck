@@ -1,0 +1,1642 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>ColeCheck - Sistema de Gestión Educativa</title>
+    <meta name="description"
+          content="Optimiza la gestión escolar con nuestro software integral: automatiza la asistencia con notificaciones por WhatsApp, mejora la comunicación, simplifica la administración de matrículas y pagos, y toma decisiones informadas con reportes detallados. Descubre cómo transformar tu institución educativa con nuestras soluciones personalizadas."/>
+    <meta name="keywords"
+          content="plataforma educativa, asistencia escolar, monitoreo en tiempo real, educación, ColeCheck, Sistema de Gestión Escolar">
+
+
+    <!-- Favicons -->
+    <link href="{% static 'img/favicons/favicon.ico' %}" rel="icon">
+    <link href="{% static 'img/favicons/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+    <!-- Favicon para Android -->
+    <link href="{% static 'img/favicons/android-chrome-192x192.png' %}" rel="icon" sizes="192x192" type="image/png">
+    <link href="{% static 'img/favicons/android-chrome-512x512.png' %}" rel="icon" sizes="512x512" type="image/png">
+
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+    {#    <!-- =======================================================#}
+    {#    * Template Name: FlexStart#}
+    {#    * Template URL: https://bootstrapmade.com/flexstart-bootstrap-startup-template/#}
+    {#    * Updated: Aug 07 2024 with Bootstrap v5.3.3#}
+    {#    * Author: BootstrapMade.com#}
+    {#    * License: https://bootstrapmade.com/license/#}
+    {#    ======================================================== -->#}
+</head>
+
+<body class="index-page">
+
+<header id="header" class="header d-flex align-items-center fixed-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center">
+
+        <a href="." class="logo d-flex align-items-center me-auto">
+            <!-- Uncomment the line below if you also wish to use an image logo -->
+            <img src="{% static 'img/colecheck.png' %}" alt="">
+            {#            <h1 class="sitename">FlexStart</h1>#}
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+            <ul>
+                <li><a href="#hero" class="active">Inicio<br></a></li>
+                <li><a href="#values">Beneficios</a></li>
+                <li><a href="#features">Características</a></li>
+                <li><a href="#services">Servicios</a></li>
+                <li><a href="#pricing">Planes</a></li>
+
+                {#                <li><a href="blog.html">Blog</a></li>#}
+                {#                <li class="dropdown"><a href="#"><span>Dropdown</span> <i#}
+                {#                        class="bi bi-chevron-down toggle-dropdown"></i></a>#}
+                {#                    <ul>#}
+                {#                        <li><a href="#">Dropdown 1</a></li>#}
+                {#                        <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i#}
+                {#                                class="bi bi-chevron-down toggle-dropdown"></i></a>#}
+                {#                            <ul>#}
+                {#                                <li><a href="#">Deep Dropdown 1</a></li>#}
+                {#                                <li><a href="#">Deep Dropdown 2</a></li>#}
+                {#                                <li><a href="#">Deep Dropdown 3</a></li>#}
+                {#                                <li><a href="#">Deep Dropdown 4</a></li>#}
+                {#                                <li><a href="#">Deep Dropdown 5</a></li>#}
+                {#                            </ul>#}
+                {#                        </li>#}
+                {#                        <li><a href="#">Dropdown 2</a></li>#}
+                {#                        <li><a href="#">Dropdown 3</a></li>#}
+                {#                        <li><a href="#">Dropdown 4</a></li>#}
+                {#                    </ul>#}
+                {#                </li>#}
+                {#                <li class="listing-dropdown"><a href="#"><span>Listing Dropdown</span> <i#}
+                {#                        class="bi bi-chevron-down toggle-dropdown"></i></a>#}
+                {#                    <ul>#}
+                {#                        <li>#}
+                {#                            <a href="#">Column 1 link 1</a>#}
+                {#                            <a href="#">Column 1 link 2</a>#}
+                {#                            <a href="#">Column 1 link 3</a>#}
+                {#                        </li>#}
+                {#                        <li>#}
+                {#                            <a href="#">Column 2 link 1</a>#}
+                {#                            <a href="#">Column 2 link 2</a>#}
+                {#                            <a href="#">Column 3 link 3</a>#}
+                {#                        </li>#}
+                {#                        <li>#}
+                {#                            <a href="#">Column 3 link 1</a>#}
+                {#                            <a href="#">Column 3 link 2</a>#}
+                {#                            <a href="#">Column 3 link 3</a>#}
+                {#                        </li>#}
+                {#                        <li>#}
+                {#                            <a href="#">Column 4 link 1</a>#}
+                {#                            <a href="#">Column 4 link 2</a>#}
+                {#                            <a href="#">Column 4 link 3</a>#}
+                {#                        </li>#}
+                {#                        <li>#}
+                {#                            <a href="#">Column 5 link 1</a>#}
+                {#                            <a href="#">Column 5 link 2</a>#}
+                {#                            <a href="#">Column 5 link 3</a>#}
+                {#                        </li>#}
+                {#                    </ul>#}
+                {#                </li>#}
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+            <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+
+        <a class="btn-getstarted flex-md-shrink-0" href="{% url 'login' %}">Ingresar</a>
+
+    </div>
+</header>
+
+<main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section">
+
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
+                    <h1 data-aos="fade-up">Libera Tiempo para lo que Realmente Importa: Educar</h1>
+                    <p data-aos="fade-up" data-aos-delay="100">Simplifica tareas administrativas y mejora la
+                        comunicación, para que puedas enfocarte en brindar una educación de calidad.</p>
+                    <div class="d-flex flex-column flex-md-row" data-aos="fade-up" data-aos-delay="200">
+                        <a href="https://wa.me/963078949?text=Hola!%20Quisiera%20una%20demostración%20del%20sistema%20*ColeCheck*"
+                           target="_blank" class="btn-get-started">Demostración Gratuita <i
+                                class="bi bi-arrow-right"></i></a>
+                        {#                        <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8"#}
+                        {#                           class="glightbox btn-watch-video d-flex align-items-center justify-content-center ms-0 ms-md-4 mt-4 mt-md-0"><i#}
+                        {#                                class="bi bi-play-circle"></i><span>Ver Funcionamiento</span></a>#}
+                    </div>
+                </div>
+                <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+                    <img src="{% static 'assets/img/hero-img.png' %}" class="img-fluid animated" alt="">
+                </div>
+            </div>
+        </div>
+
+    </section><!-- /Hero Section -->
+
+    <!-- Problemas/Soluciones Section -->
+    <section id="problems-solutions" class="about section">
+
+        <div class="container" data-aos="fade-up">
+            <div class="row gx-0">
+
+                <!-- Columna de Problemas -->
+                <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="content">
+                        <h3>Problemas Comunes en la Gestión Escolar</h3>
+                        <h2>Identifica y Resuelve los Desafíos Diarios</h2>
+                        <ul style="list-style-type: none;">
+                            <li><i class="bi bi-exclamation-circle-fill"></i> Sobrecarga de Trabajo Administrativo</li>
+                            <p>Las tareas administrativas consumen gran parte de tu día, dejando menos tiempo para la
+                                enseñanza y planificación.</p>
+
+                            <li><i class="bi bi-exclamation-circle-fill"></i> Dificultad para Mantener a los Padres
+                                Informados
+                            </li>
+                            <p>La falta de una comunicación eficiente puede llevar a malentendidos y falta de confianza
+                                por parte de los padres.</p>
+
+                            <li><i class="bi bi-exclamation-circle-fill"></i> Falta de Tiempo para Personalización
+                                Educativa
+                            </li>
+                            <p>Con tanto trabajo manual, es difícil personalizar el aprendizaje para cada
+                                estudiante.</p>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Columna de Soluciones -->
+                <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="zoom-out"
+                     data-aos-delay="200">
+                    <div class="content">
+                        <h3>Nuestra Solución para tu Institución</h3>
+                        <h2>Automatiza, Simplifica y Mejora la Gestión Escolar</h2>
+                        <ul style="list-style-type: none;">
+                            <li><i class="bi bi-check-circle-fill"></i> Automatización del Trabajo Administrativo</li>
+                            <p>Nuestro sistema se encarga de las tareas administrativas, liberando tu tiempo para que te
+                                enfoques en la educación.</p>
+
+                            <li><i class="bi bi-check-circle-fill"></i> Comunicación Instantánea y Transparente</li>
+                            <p>Notifica automáticamente a los padres sobre la asistencia y el rendimiento de sus hijos,
+                                fortaleciendo la confianza en la institución.</p>
+
+                            <li><i class="bi bi-check-circle-fill"></i> Herramientas para una Educación Personalizada
+                            </li>
+                            <p>Utiliza los datos recopilados para adaptar la enseñanza a las necesidades individuales de
+                                cada estudiante.</p>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </section><!-- /Problemas/Soluciones Section -->
+
+
+    <!-- Values Section -->
+    <section id="values" class="values section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Beneficios</h2>
+            <p>Lo que más valoramos<br></p>
+        </div><!-- End Section Title -->
+
+        <div class="container">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card">
+                        <img src="{% static 'assets/img/values-1.png' %}" class="img-fluid" alt="">
+                        <h3>Reducción del Estrés</h3>
+                        <p>Con menos tiempo dedicado a tareas repetitivas, los profesores pueden concentrarse en
+                            planificar lecciones y brindar apoyo individual a los estudiantes.</p>
+                    </div>
+                </div><!-- End Card Item -->
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card">
+                        <img src="{% static 'assets/img/values-2.png' %}" class="img-fluid" alt="">
+                        <h3>Mayor Satisfacción Laboral</h3>
+                        <p>Un entorno de trabajo más eficiente y organizado se traduce en mayor satisfacción y menos
+                            burnout para el personal educativo.</p>
+                    </div>
+                </div><!-- End Card Item -->
+
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card">
+                        <img src="{% static 'assets/img/values-3.png' %}" class="img-fluid" alt="">
+                        <h3>Mejor Colaboración entre el Personal</h3>
+                        <p>Con todos los datos centralizados, la colaboración entre profesores, administrativos y
+                            directores se vuelve fluida y efectiva.</p>
+                    </div>
+                </div><!-- End Card Item -->
+
+            </div>
+
+        </div>
+
+    </section><!-- /Values Section -->
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats section">
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item d-flex align-items-center w-100 h-100">
+                        <i class="bi bi-emoji-smile color-blue flex-shrink-0"></i>
+                        <div>
+                            <span data-purecounter-start="0" data-purecounter-end="10579" data-purecounter-duration="1"
+                                  class="purecounter"></span>
+                            <p>Estudiantes</p>
+                        </div>
+                    </div>
+                </div><!-- End Stats Item -->
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item d-flex align-items-center w-100 h-100">
+                        <i class="bi bi-journal-richtext color-orange flex-shrink-0" style="color: #ee6c20;"></i>
+                        <div>
+                            <span data-purecounter-start="0" data-purecounter-end="17" data-purecounter-duration="1"
+                                  class="purecounter"></span>
+                            <p>Colegios</p>
+                        </div>
+                    </div>
+                </div><!-- End Stats Item -->
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item d-flex align-items-center w-100 h-100">
+                        <i class="bi bi-people color-pink flex-shrink-0" style="color: #bb0852;"></i>
+                        <div>
+                            <span data-purecounter-start="0" data-purecounter-end="9913" data-purecounter-duration="1"
+                                  class="purecounter"></span>
+                            <p>Padres de Familia</p>
+                        </div>
+                    </div>
+                </div><!-- End Stats Item -->
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item d-flex align-items-center w-100 h-100">
+                        <i class="bi bi-headset color-green flex-shrink-0" style="color: #15be56;"></i>
+                        <div>
+                            <span data-purecounter-start="0" data-purecounter-end="1463" data-purecounter-duration="1"
+                                  class="">24/7</span>
+                            <p>Soporte</p>
+                        </div>
+                    </div>
+                </div><!-- End Stats Item -->
+
+            </div>
+
+        </div>
+
+    </section><!-- /Stats Section -->
+
+    <!-- Features Section -->
+    <section id="features" class="features section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Características</h2>
+            <p>Nuestras Características<br></p>
+        </div><!-- End Section Title -->
+
+        <div class="container">
+
+            <div class="row gy-5">
+
+                <div class="col-xl-6" data-aos="zoom-out" data-aos-delay="100">
+                    <img src="{% static 'assets/img/features.png' %}" class="img-fluid" alt="">
+                </div>
+
+                <div class="col-xl-6 d-flex">
+                    <div class="row align-self-center gy-4">
+
+                        <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
+                            <div class="feature-box d-flex align-items-center">
+                                <i class="bi bi-check"></i>
+                                <h3>Automatización de Tareas Administrativas</h3>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
+                            <div class="feature-box d-flex align-items-center">
+                                <i class="bi bi-check"></i>
+                                <h3>Comunicación Efectiva e Instantánea</h3>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6" data-aos="fade-up" data-aos-delay="400">
+                            <div class="feature-box d-flex align-items-center">
+                                <i class="bi bi-check"></i>
+                                <h3>Acceso a Datos en Tiempo Real</h3>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6" data-aos="fade-up" data-aos-delay="500">
+                            <div class="feature-box d-flex align-items-center">
+                                <i class="bi bi-check"></i>
+                                <h3>Personalización y Flexibilidad</h3>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6" data-aos="fade-up" data-aos-delay="600">
+                            <div class="feature-box d-flex align-items-center">
+                                <i class="bi bi-check"></i>
+                                <h3>Integración con Otras Plataformas</h3>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6" data-aos="fade-up" data-aos-delay="700">
+                            <div class="feature-box d-flex align-items-center">
+                                <i class="bi bi-check"></i>
+                                <h3>Seguridad y Cumplimiento Normativo</h3>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section><!-- /Features Section -->
+
+    <!-- Alt Features Section -->
+    <section id="alt-features" class="alt-features section">
+
+        <div class="container">
+
+            <div class="row gy-5">
+
+                <div class="col-xl-7 d-flex order-2 order-xl-1" data-aos="fade-up" data-aos-delay="200">
+
+                    <div class="row align-self-center gy-5">
+
+                        <div class="col-md-6 icon-box">
+                            <i class="bi bi-award"></i>
+                            <div>
+                                <h4>Automatización Inteligente de Tareas Administrativas</h4>
+                                <p>Libera tu tiempo con la automatización de reportes, horarios y matrículas. Nuestro
+                                    software se encarga de las tareas repetitivas, permitiéndote concentrarte en lo
+                                    esencial: la educación.
+                                </p>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6 icon-box">
+                            <i class="bi bi-card-checklist"></i>
+                            <div>
+                                <h4>Comunicación Instantánea y Transparente</h4>
+                                <p>Mantén a padres y estudiantes informados con notificaciones automáticas sobre
+                                    asistencia, calificaciones y eventos. Facilita la comunicación y fortalece la
+                                    relación con la comunidad educativa.
+                                </p>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6 icon-box">
+                            <i class="bi bi-dribbble"></i>
+                            <div>
+                                <h4>Acceso a Datos en Tiempo Real para Decisiones Precisas</h4>
+                                <p>Toma decisiones rápidas y efectivas con acceso inmediato a datos críticos, desde el
+                                    rendimiento académico hasta la asistencia diaria. Mejora la gestión escolar con
+                                    información actualizada.
+                                </p>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6 icon-box">
+                            <i class="bi bi-filter-circle"></i>
+                            <div>
+                                <h4>Personalización y Flexibilidad para Satisfacer tus Necesidades</h4>
+                                <p>Adapta el sistema a las necesidades específicas de tu institución con módulos y
+                                    reportes personalizables. Flexibilidad total para que el software se ajuste
+                                    perfectamente a tu flujo de trabajo.
+                                </p>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6 icon-box">
+                            <i class="bi bi-lightning-charge"></i>
+                            <div>
+                                <h4>Integración Fluida con las Herramientas que ya Usas</h4>
+                                <p>Simplifica la gestión escolar integrando nuestro software con tus plataformas
+                                    existentes. Crea un ecosistema unificado que reduce la complejidad operativa.
+                                </p>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                        <div class="col-md-6 icon-box">
+                            <i class="bi bi-patch-check"></i>
+                            <div>
+                                <h4>Seguridad de Datos y Cumplimiento Normativo de Primera Clase</h4>
+                                <p>Protege la información con las mejores medidas de seguridad y cumplimiento normativo.
+                                    Mantén los datos de estudiantes y personal seguros y protegidos en todo momento.
+                                </p>
+                            </div>
+                        </div><!-- End Feature Item -->
+
+                    </div>
+
+                </div>
+
+                <div class="col-xl-5 d-flex align-items-center order-1 order-xl-2" data-aos="fade-up"
+                     data-aos-delay="100">
+                    <img src="{% static 'assets/img/alt-features.png' %}" class="img-fluid" alt="">
+                </div>
+
+            </div>
+
+        </div>
+
+    </section><!-- /Alt Features Section -->
+
+    <!-- Services Section -->
+    <section id="services" class="services section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Servicios</h2>
+            <p>Revisa Nuestros Servicios<br></p>
+        </div><!-- End Section Title -->
+
+        <div class="container">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="service-item item-cyan position-relative">
+                        <i class="bi bi-activity icon"></i>
+                        <h3>Asistencia Automática y Notificaciones por WhatsApp</h3>
+                        <p>Registra la asistencia de forma automática y envía mensajes de WhatsApp a los padres al
+                            momento del ingreso y salida de sus hijos. Mejora la puntualidad y mantén a los padres
+                            informados en tiempo real, sin esfuerzo adicional.</p>
+                        {#                        <a href="#" class="read-more stretched-link"><span>Read More</span> <i#}
+                        {#                                class="bi bi-arrow-right"></i></a>#}
+                    </div>
+                </div><!-- End Service Item -->
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-item item-orange position-relative">
+                        <i class="bi bi-broadcast icon"></i>
+                        <h3>Control Académico y Evaluaciones Simplificadas</h3>
+                        <p>Optimiza el seguimiento académico con entrada y análisis de calificaciones simplificados.
+                            Genera reportes detallados para identificar áreas de mejora y personaliza la educación según
+                            las necesidades de cada estudiante.</p>
+                        {#                        <a href="#" class="read-more stretched-link"><span>Read More</span> <i#}
+                        {#                                class="bi bi-arrow-right"></i></a>#}
+                    </div>
+                </div><!-- End Service Item -->
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-item item-teal position-relative">
+                        <i class="bi bi-easel icon"></i>
+                        <h3>Comunicación Efectiva y Personalizada</h3>
+                        <p>Facilita la comunicación con padres y estudiantes a través de mensajes personalizados,
+                            recordatorios y actualizaciones. Mejora el compromiso y la satisfacción de la comunidad
+                            educativa de manera rápida y sencilla.</p>
+                        {#                        <a href="#" class="read-more stretched-link"><span>Read More</span> <i#}
+                        {#                                class="bi bi-arrow-right"></i></a>#}
+                    </div>
+                </div><!-- End Service Item -->
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                    <div class="service-item item-red position-relative">
+                        <i class="bi bi-bounding-box-circles icon"></i>
+                        <h3>Administración de Matrículas y Pagos</h3>
+                        <p>Simplifica el proceso de inscripción y la gestión de pagos con nuestro sistema seguro.
+                            Gestiona inscripciones en línea, cuotas y becas de manera eficiente, garantizando una
+                            experiencia fluida para todos.</p>
+                        {#                        <a href="#" class="read-more stretched-link"><span>Read More</span> <i#}
+                        {#                                class="bi bi-arrow-right"></i></a>#}
+                    </div>
+                </div><!-- End Service Item -->
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                    <div class="service-item item-indigo position-relative">
+                        <i class="bi bi-calendar4-week icon"></i>
+                        <h3>Generación de Reportes y Análisis de Datos</h3>
+                        <p>Accede a reportes completos y análisis de datos clave. Identifica tendencias en rendimiento
+                            académico y asistencia para tomar decisiones informadas y actuar proactivamente.</p>
+                        {#                        <a href="#" class="read-more stretched-link"><span>Read More</span> <i#}
+                        {#                                class="bi bi-arrow-right"></i></a>#}
+                    </div>
+                </div><!-- End Service Item -->
+
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                    <div class="service-item item-pink position-relative">
+                        <i class="bi bi-chat-square-text icon"></i>
+                        <h3>Gestión de Recursos Humanos y Personal Escolar</h3>
+                        <p>Administra el personal escolar desde la contratación hasta la planificación de horarios.
+                            Controla todos los aspectos de los recursos humanos para asegurar un equipo eficiente y bien
+                            gestionado.</p>
+                        {#                        <a href="#" class="read-more stretched-link"><span>Read More</span> <i#}
+                        {#                                class="bi bi-arrow-right"></i></a>#}
+                    </div>
+                </div><!-- End Service Item -->
+
+            </div>
+
+        </div>
+
+    </section><!-- /Services Section -->
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Planes</h2>
+            <p>Consulte Por Nuestros Planes<br></p>
+        </div><!-- End Section Title -->
+
+        <div class="container">
+
+            <div class="row gy-4 justify-content-center">
+
+                {#                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="100">#}
+                {#                    <div class="pricing-tem">#}
+                {#                        <h3 style="color: #20c997;">Free Plan</h3>#}
+                {#                        <div class="price"><sup>$</sup>0<span> / mo</span></div>#}
+                {#                        <div class="icon">#}
+                {#                            <i class="bi bi-box" style="color: #20c997;"></i>#}
+                {#                        </div>#}
+                {#                        <ul>#}
+                {#                            <li>Aida dere</li>#}
+                {#                            <li>Nec feugiat nisl</li>#}
+                {#                            <li>Nulla at volutpat dola</li>#}
+                {#                            <li class="na">Pharetra massa</li>#}
+                {#                            <li class="na">Massa ultricies mi</li>#}
+                {#                        </ul>#}
+                {#                        <a href="#" class="btn-buy">Buy Now</a>#}
+                {#                    </div>#}
+                {#                </div><!-- End Pricing Item -->#}
+
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="pricing-tem">
+                        <h3 style="color: #fd7e14;">Plan Inicial</h3>
+                        {#                        <div class="price"><sup>S/</sup>2<span> / mes</span></div>#}
+                        <div class="price">Sistema de Asistencia</div>
+                        <div class="icon">
+                            <i class="bi bi-airplane" style="color: #fd7e14;"></i>
+                        </div>
+                        <ul>
+                            <li>Notificaciones en Tiempo Real (WhatsApp)</li>
+                            <li>Asistencia Auxiliar</li>
+                            <li>Asistencia Docente</li>
+                            <li>Reportes de Asistencia</li>
+                            {#                            <li>Massa ultricies mi</li>#}
+                        </ul>
+                        <a href="https://wa.me/963078949?text=Hola!%20Quisiera%20una%20demostración%20del%20sistema%20de%20Asistencia%20-%20*ColeCheck*"
+                           target="_blank" class="btn-buy">Consultar <i
+                                class="bi bi-whatsapp"></i></a>
+                    </div>
+                </div><!-- End Pricing Item -->
+
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="pricing-tem">
+                        <span class="featured">Popular</span>
+                        <h3 style="color: #0dcaf0;">Plan Completo</h3>
+                        {#                        <div class="price"><sup>S/</sup>4<span> / mes</span></div>#}
+                        <div class="price">Sistema Completo</div>
+                        <div class="icon">
+                            <i class="bi bi-rocket" style="color: #0dcaf0;"></i>
+                        </div>
+                        <ul>
+                            <li>Asistencia en General</li>
+                            <li>Notificaciones en Tiempo Real (WhatsApp)</li>
+                            <li>Gestión de Matrículas</li>
+                            <li>Gestión Financiera</li>
+                            <li>Aula Virtual</li>
+                        </ul>
+                        <a href="https://wa.me/963078949?text=Hola!%20Quisiera%20una%20demostración%20del%20sistema%20Completo%20-%20*ColeCheck*"
+                           target="_blank" class="btn-buy">Consultar <i
+                                class="bi bi-whatsapp"></i></a>
+                    </div>
+                </div><!-- End Pricing Item -->
+
+
+                {#                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">#}
+                {#                    <div class="pricing-tem">#}
+                {#                        <h3 style="color: #0d6efd;">Ultimate Plan</h3>#}
+                {#                        <div class="price"><sup>$</sup>49<span> / mo</span></div>#}
+                {#                        <div class="icon">#}
+                {#                            <i class="bi bi-rocket" style="color: #0d6efd;"></i>#}
+                {#                        </div>#}
+                {#                        <ul>#}
+                {#                            <li>Aida dere</li>#}
+                {#                            <li>Nec feugiat nisl</li>#}
+                {#                            <li>Nulla at volutpat dola</li>#}
+                {#                            <li>Pharetra massa</li>#}
+                {#                            <li>Massa ultricies mi</li>#}
+                {#                        </ul>#}
+                {#                        <a href="#" class="btn-buy">Buy Now</a>#}
+                {#                    </div>#}
+                {#                </div><!-- End Pricing Item -->#}
+
+            </div><!-- End pricing row -->
+
+        </div>
+
+    </section><!-- /Pricing Section -->
+
+    <!-- Faq Section -->
+    <section id="faq" class="faq section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>F.A.Q</h2>
+            <p>Preguntas Frequentes</p>
+        </div><!-- End Section Title -->
+
+        <div class="container">
+
+            <div class="row">
+
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+
+                    <div class="faq-container">
+
+                        <div class="faq-item faq-active">
+                            <h3>¿Qué es ColeCheck y cómo puede beneficiar a mi Institución?</h3>
+                            <div class="faq-content">
+                                <p>ColeCheck es una solución integral para la gestión escolar que facilita la
+                                    administración de clases, asistencia, calificaciones y comunicación entre docentes,
+                                    estudiantes y padres. Con nuestra plataforma, tu escuela puede automatizar procesos,
+                                    mejorar la comunicación y obtener informes detallados para tomar decisiones
+                                    informadas.</p>
+                            </div>
+                            <i class="faq-toggle bi bi-chevron-right"></i>
+                        </div><!-- End Faq item-->
+
+                        <div class="faq-item">
+                            <h3>¿Cómo se implementa ColeCheck en mi Institución?</h3>
+                            <div class="faq-content">
+                                <p>La implementación de ColeCheck es sencilla. Ofrecemos una integración
+                                    personalizada que incluye capacitación para el personal, soporte técnico continuo y
+                                    una guía paso a paso para asegurar una transición suave. Nuestro equipo de soporte
+                                    está disponible para ayudarte en cada etapa del proceso.</p>
+                            </div>
+                            <i class="faq-toggle bi bi-chevron-right"></i>
+                        </div><!-- End Faq item-->
+
+                        <div class="faq-item">
+                            <h3>¿Es ColeCheck seguro y cómo protege los datos de los usuarios?</h3>
+                            <div class="faq-content">
+                                <p>Sí, ColeCheck prioriza la seguridad de los datos. Utilizamos encriptación
+                                    avanzada para proteger la información y cumplir con las regulaciones de protección
+                                    de datos. Además, realizamos auditorías regulares y contamos con medidas de
+                                    seguridad robustas para garantizar que tus datos estén siempre seguros.</p>
+                            </div>
+                            <i class="faq-toggle bi bi-chevron-right"></i>
+                        </div><!-- End Faq item-->
+
+                    </div>
+
+                </div><!-- End Faq Column-->
+
+                <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+
+                    <div class="faq-container">
+
+                        <div class="faq-item">
+                            <h3>¿Qué dispositivos y navegadores son compatibles con ColeCheck?</h3>
+                            <div class="faq-content">
+                                <p>ColeCheck es compatible con la mayoría de los dispositivos y navegadores
+                                    modernos, incluyendo Chrome, Firefox, Safari y Edge. Puedes acceder a la plataforma
+                                    desde tu teléfono o tablet, ya sea en iOS o Android.</p>
+                            </div>
+                            <i class="faq-toggle bi bi-chevron-right"></i>
+                        </div><!-- End Faq item-->
+
+                        <div class="faq-item">
+                            <h3>¿Puedo personalizar ColeCheck para adaptarlo a las necesidades específicas de mi
+                                escuela?</h3>
+                            <div class="faq-content">
+                                <p>Sí, ColeCheck es altamente personalizable. Puedes ajustar configuraciones,
+                                    añadir módulos específicos y adaptar el sistema a los procesos únicos de tu
+                                    institución. Nuestro equipo de soporte está disponible para asistirte en la
+                                    personalización según tus necesidades.</p>
+                            </div>
+                            <i class="faq-toggle bi bi-chevron-right"></i>
+                        </div><!-- End Faq item-->
+
+                        <div class="faq-item">
+                            <h3>¿Qué opciones de soporte y asistencia ofrece ColeCheck?</h3>
+                            <div class="faq-content">
+                                <p>Ofrecemos múltiples opciones de soporte para adaptarnos a tus necesidades. Puedes
+                                    elegir entre soporte presencial con visitas a tu institución, videollamadas, y
+                                    asistencia por correo electrónico o WhatsApp. Además, contamos con una amplia
+                                    base de conocimientos que incluye tutoriales y guías para ayudarte a resolver
+                                    problemas de manera autónoma.</p>
+                            </div>
+                            <i class="faq-toggle bi bi-chevron-right"></i>
+                        </div><!-- End Faq item-->
+
+                    </div>
+
+                </div><!-- End Faq Column-->
+
+            </div>
+
+        </div>
+
+    </section><!-- /Faq Section -->
+
+    {#    <!-- Portfolio Section -->#}
+    {#    <section id="portfolio" class="portfolio section">#}
+    {##}
+    {#        <!-- Section Title -->#}
+    {#        <div class="container section-title" data-aos="fade-up">#}
+    {#            <h2>Portfolio</h2>#}
+    {#            <p>Check our latest work</p>#}
+    {#        </div><!-- End Section Title -->#}
+    {##}
+    {#        <div class="container">#}
+    {##}
+    {#            <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">#}
+    {##}
+    {#                <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">#}
+    {#                    <li data-filter="*" class="filter-active">All</li>#}
+    {#                    <li data-filter=".filter-app">App</li>#}
+    {#                    <li data-filter=".filter-product">Product</li>#}
+    {#                    <li data-filter=".filter-branding">Branding</li>#}
+    {#                    <li data-filter=".filter-books">Books</li>#}
+    {#                </ul><!-- End Portfolio Filters -->#}
+    {##}
+    {#                <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/app-1.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>App 1</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/app-1.jpg' %}" title="App 1"#}
+    {#                                   data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/product-1.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Product 1</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/product-1.jpg' %}" title="Product 1"#}
+    {#                                   data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/branding-1.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Branding 1</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/branding-1.jpg' %}" title="Branding 1"#}
+    {#                                   data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/books-1.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Books 1</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/books-1.jpg' %}" title="Branding 1"#}
+    {#                                   data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/app-2.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>App 2</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/app-2.jpg' %}" title="App 2"#}
+    {#                                   data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/product-2.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Product 2</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/product-2.jpg' %}" title="Product 2"#}
+    {#                                   data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/branding-2.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Branding 2</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/branding-2.jpg' %}" title="Branding 2"#}
+    {#                                   data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/books-2.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Books 2</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/books-2.jpg' %}" title="Branding 2"#}
+    {#                                   data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/app-3.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>App 3</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/app-3.jpg' %}" title="App 3"#}
+    {#                                   data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/product-3.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Product 3</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/product-3.jpg' %}" title="Product 3"#}
+    {#                                   data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/branding-3.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Branding 3</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/branding-3.jpg' %}" title="Branding 2"#}
+    {#                                   data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                    <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">#}
+    {#                        <div class="portfolio-content h-100">#}
+    {#                            <img src="{% static 'assets/img/portfolio/books-3.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="portfolio-info">#}
+    {#                                <h4>Books 3</h4>#}
+    {#                                <p>Lorem ipsum, dolor sit amet consectetur</p>#}
+    {#                                <a href="{% static 'assets/img/portfolio/books-3.jpg' %}" title="Branding 3"#}
+    {#                                   data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i#}
+    {#                                        class="bi bi-zoom-in"></i></a>#}
+    {#                                <a href="portfolio-details.html" title="More Details" class="details-link"><i#}
+    {#                                        class="bi bi-link-45deg"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End Portfolio Item -->#}
+    {##}
+    {#                </div><!-- End Portfolio Container -->#}
+    {##}
+    {#            </div>#}
+    {##}
+    {#        </div>#}
+    {##}
+    {#    </section><!-- /Portfolio Section -->#}
+
+    {#    <!-- Testimonials Section -->#}
+    {#    <section id="testimonials" class="testimonials section">#}
+    {##}
+    {#        <!-- Section Title -->#}
+    {#        <div class="container section-title" data-aos="fade-up">#}
+    {#            <h2>Testimonios</h2>#}
+    {#            <p>Lo que dicen de nosotros<br></p>#}
+    {#        </div><!-- End Section Title -->#}
+    {##}
+    {#        <div class="container" data-aos="fade-up" data-aos-delay="100">#}
+    {##}
+    {#            <div class="swiper init-swiper">#}
+    {#                <script type="application/json" class="swiper-config">#}
+    {#                    {#}
+    {#                      "loop": true,#}
+    {#                      "speed": 600,#}
+    {#                      "autoplay": {#}
+    {#                        "delay": 5000#}
+    {#                      },#}
+    {#                      "slidesPerView": "auto",#}
+    {#                      "pagination": {#}
+    {#                        "el": ".swiper-pagination",#}
+    {#                        "type": "bullets",#}
+    {#                        "clickable": true#}
+    {#                      },#}
+    {#                      "breakpoints": {#}
+    {#                        "320": {#}
+    {#                          "slidesPerView": 1,#}
+    {#                          "spaceBetween": 40#}
+    {#                        },#}
+    {#                        "1200": {#}
+    {#                          "slidesPerView": 3,#}
+    {#                          "spaceBetween": 1#}
+    {#                        }#}
+    {#                      }#}
+    {#                    }#}
+    {#                </script>#}
+    {#                <div class="swiper-wrapper">#}
+    {##}
+    {#                    <div class="swiper-slide">#}
+    {#                        <div class="testimonial-item">#}
+    {#                            <div class="stars">#}
+    {#                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i>#}
+    {#                            </div>#}
+    {#                            <p>#}
+    {#                                Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit#}
+    {#                                rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam,#}
+    {#                                risus at semper.#}
+    {#                            </p>#}
+    {#                            <div class="profile mt-auto">#}
+    {#                                <img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}"#}
+    {#                                     class="testimonial-img" alt="">#}
+    {#                                <h3>Saul Goodman</h3>#}
+    {#                                <h4>Ceo &amp; Founder</h4>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End testimonial item -->#}
+    {##}
+    {#                    <div class="swiper-slide">#}
+    {#                        <div class="testimonial-item">#}
+    {#                            <div class="stars">#}
+    {#                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i>#}
+    {#                            </div>#}
+    {#                            <p>#}
+    {#                                Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid#}
+    {#                                cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet#}
+    {#                                legam anim culpa.#}
+    {#                            </p>#}
+    {#                            <div class="profile mt-auto">#}
+    {#                                <img src="{% static 'assets/img/testimonials/testimonials-2.jpg' %}"#}
+    {#                                     class="testimonial-img" alt="">#}
+    {#                                <h3>Sara Wilsson</h3>#}
+    {#                                <h4>Designer</h4>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End testimonial item -->#}
+    {##}
+    {#                    <div class="swiper-slide">#}
+    {#                        <div class="testimonial-item">#}
+    {#                            <div class="stars">#}
+    {#                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i>#}
+    {#                            </div>#}
+    {#                            <p>#}
+    {#                                Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam#}
+    {#                                duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.#}
+    {#                            </p>#}
+    {#                            <div class="profile mt-auto">#}
+    {#                                <img src="{% static 'assets/img/testimonials/testimonials-3.jpg' %}"#}
+    {#                                     class="testimonial-img" alt="">#}
+    {#                                <h3>Jena Karlis</h3>#}
+    {#                                <h4>Store Owner</h4>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End testimonial item -->#}
+    {##}
+    {#                    <div class="swiper-slide">#}
+    {#                        <div class="testimonial-item">#}
+    {#                            <div class="stars">#}
+    {#                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i>#}
+    {#                            </div>#}
+    {#                            <p>#}
+    {#                                Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat#}
+    {#                                minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore#}
+    {#                                labore illum veniam.#}
+    {#                            </p>#}
+    {#                            <div class="profile mt-auto">#}
+    {#                                <img src="{% static 'assets/img/testimonials/testimonials-4.jpg' %}"#}
+    {#                                     class="testimonial-img" alt="">#}
+    {#                                <h3>Matt Brandon</h3>#}
+    {#                                <h4>Freelancer</h4>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End testimonial item -->#}
+    {##}
+    {#                    <div class="swiper-slide">#}
+    {#                        <div class="testimonial-item">#}
+    {#                            <div class="stars">#}
+    {#                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i#}
+    {#                                    class="bi bi-star-fill"></i>#}
+    {#                            </div>#}
+    {#                            <p>#}
+    {#                                Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster#}
+    {#                                veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam#}
+    {#                                culpa fore nisi cillum quid.#}
+    {#                            </p>#}
+    {#                            <div class="profile mt-auto">#}
+    {#                                <img src="{% static 'assets/img/testimonials/testimonials-5.jpg' %}"#}
+    {#                                     class="testimonial-img" alt="">#}
+    {#                                <h3>John Larson</h3>#}
+    {#                                <h4>Entrepreneur</h4>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                    </div><!-- End testimonial item -->#}
+    {##}
+    {#                </div>#}
+    {#                <div class="swiper-pagination"></div>#}
+    {#            </div>#}
+    {##}
+    {#        </div>#}
+    {##}
+    {#    </section><!-- /Testimonials Section -->#}
+
+    {#    <!-- Team Section -->#}
+    {#    <section id="team" class="team section">#}
+    {##}
+    {#        <!-- Section Title -->#}
+    {#        <div class="container section-title" data-aos="fade-up">#}
+    {#            <h2>Team</h2>#}
+    {#            <p>Our hard working team</p>#}
+    {#        </div><!-- End Section Title -->#}
+    {##}
+    {#        <div class="container">#}
+    {##}
+    {#            <div class="row gy-4">#}
+    {##}
+    {#                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">#}
+    {#                    <div class="team-member">#}
+    {#                        <div class="member-img">#}
+    {#                            <img src="{% static 'assets/img/team/team-1.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="social">#}
+    {#                                <a href=""><i class="bi bi-twitter-x"></i></a>#}
+    {#                                <a href=""><i class="bi bi-facebook"></i></a>#}
+    {#                                <a href=""><i class="bi bi-instagram"></i></a>#}
+    {#                                <a href=""><i class="bi bi-linkedin"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                        <div class="member-info">#}
+    {#                            <h4>Walter White</h4>#}
+    {#                            <span>Chief Executive Officer</span>#}
+    {#                            <p>Velit aut quia fugit et et. Dolorum ea voluptate vel tempore tenetur ipsa quae aut. Ipsum#}
+    {#                                exercitationem iure minima enim corporis et voluptate.</p>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                </div><!-- End Team Member -->#}
+    {##}
+    {#                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">#}
+    {#                    <div class="team-member">#}
+    {#                        <div class="member-img">#}
+    {#                            <img src="{% static 'assets/img/team/team-2.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="social">#}
+    {#                                <a href=""><i class="bi bi-twitter-x"></i></a>#}
+    {#                                <a href=""><i class="bi bi-facebook"></i></a>#}
+    {#                                <a href=""><i class="bi bi-instagram"></i></a>#}
+    {#                                <a href=""><i class="bi bi-linkedin"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                        <div class="member-info">#}
+    {#                            <h4>Sarah Jhonson</h4>#}
+    {#                            <span>Product Manager</span>#}
+    {#                            <p>Quo esse repellendus quia id. Est eum et accusantium pariatur fugit nihil minima suscipit#}
+    {#                                corporis. Voluptate sed quas reiciendis animi neque sapiente.</p>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                </div><!-- End Team Member -->#}
+    {##}
+    {#                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">#}
+    {#                    <div class="team-member">#}
+    {#                        <div class="member-img">#}
+    {#                            <img src="{% static 'assets/img/team/team-3.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="social">#}
+    {#                                <a href=""><i class="bi bi-twitter-x"></i></a>#}
+    {#                                <a href=""><i class="bi bi-facebook"></i></a>#}
+    {#                                <a href=""><i class="bi bi-instagram"></i></a>#}
+    {#                                <a href=""><i class="bi bi-linkedin"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                        <div class="member-info">#}
+    {#                            <h4>William Anderson</h4>#}
+    {#                            <span>CTO</span>#}
+    {#                            <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt. Voluptates#}
+    {#                                enim aut architecto porro aspernatur molestiae modi.</p>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                </div><!-- End Team Member -->#}
+    {##}
+    {#                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">#}
+    {#                    <div class="team-member">#}
+    {#                        <div class="member-img">#}
+    {#                            <img src="{% static 'assets/img/team/team-4.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <div class="social">#}
+    {#                                <a href=""><i class="bi bi-twitter-x"></i></a>#}
+    {#                                <a href=""><i class="bi bi-facebook"></i></a>#}
+    {#                                <a href=""><i class="bi bi-instagram"></i></a>#}
+    {#                                <a href=""><i class="bi bi-linkedin"></i></a>#}
+    {#                            </div>#}
+    {#                        </div>#}
+    {#                        <div class="member-info">#}
+    {#                            <h4>Amanda Jepson</h4>#}
+    {#                            <span>Accountant</span>#}
+    {#                            <p>Rerum voluptate non adipisci animi distinctio et deserunt amet voluptas. Quia aut aliquid#}
+    {#                                doloremque ut possimus ipsum officia.</p>#}
+    {#                        </div>#}
+    {#                    </div>#}
+    {#                </div><!-- End Team Member -->#}
+    {##}
+    {#            </div>#}
+    {##}
+    {#        </div>#}
+    {##}
+    {#    </section><!-- /Team Section -->#}
+
+    {#    <!-- Clients Section -->#}
+    {#    <section id="clients" class="clients section">#}
+    {##}
+    {#        <!-- Section Title -->#}
+    {#        <div class="container section-title" data-aos="fade-up">#}
+    {#            <h2>Clients</h2>#}
+    {#            <p>We work with best clients<br></p>#}
+    {#        </div><!-- End Section Title -->#}
+    {##}
+    {#        <div class="container" data-aos="fade-up" data-aos-delay="100">#}
+    {##}
+    {#            <div class="swiper init-swiper">#}
+    {#                <script type="application/json" class="swiper-config">#}
+    {#                    {#}
+    {#                      "loop": true,#}
+    {#                      "speed": 600,#}
+    {#                      "autoplay": {#}
+    {#                        "delay": 5000#}
+    {#                      },#}
+    {#                      "slidesPerView": "auto",#}
+    {#                      "pagination": {#}
+    {#                        "el": ".swiper-pagination",#}
+    {#                        "type": "bullets",#}
+    {#                        "clickable": true#}
+    {#                      },#}
+    {#                      "breakpoints": {#}
+    {#                        "320": {#}
+    {#                          "slidesPerView": 2,#}
+    {#                          "spaceBetween": 40#}
+    {#                        },#}
+    {#                        "480": {#}
+    {#                          "slidesPerView": 3,#}
+    {#                          "spaceBetween": 60#}
+    {#                        },#}
+    {#                        "640": {#}
+    {#                          "slidesPerView": 4,#}
+    {#                          "spaceBetween": 80#}
+    {#                        },#}
+    {#                        "992": {#}
+    {#                          "slidesPerView": 6,#}
+    {#                          "spaceBetween": 120#}
+    {#                        }#}
+    {#                      }#}
+    {#                    }#}
+    {#                </script>#}
+    {#                <div class="swiper-wrapper align-items-center">#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-1.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-2.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-3.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-4.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-5.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-6.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-7.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                    <div class="swiper-slide"><img src="{% static 'assets/img/clients/client-8.png' %}"#}
+    {#                                                   class="img-fluid" alt=""></div>#}
+    {#                </div>#}
+    {#                <div class="swiper-pagination"></div>#}
+    {#            </div>#}
+    {##}
+    {#        </div>#}
+    {##}
+    {#    </section><!-- /Clients Section -->#}
+
+    {#    <!-- Recent Posts Section -->#}
+    {#    <section id="recent-posts" class="recent-posts section">#}
+    {##}
+    {#        <!-- Section Title -->#}
+    {#        <div class="container section-title" data-aos="fade-up">#}
+    {#            <h2>Recent Posts</h2>#}
+    {#            <p>Recent posts form our Blog</p>#}
+    {#        </div><!-- End Section Title -->#}
+    {##}
+    {#        <div class="container">#}
+    {##}
+    {#            <div class="row gy-5">#}
+    {##}
+    {#                <div class="col-xl-4 col-md-6">#}
+    {#                    <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="100">#}
+    {##}
+    {#                        <div class="post-img position-relative overflow-hidden">#}
+    {#                            <img src="{% static 'assets/img/blog/blog-1.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <span class="post-date">December 12</span>#}
+    {#                        </div>#}
+    {##}
+    {#                        <div class="post-content d-flex flex-column">#}
+    {##}
+    {#                            <h3 class="post-title">Eum ad dolor et. Autem aut fugiat debitis</h3>#}
+    {##}
+    {#                            <div class="meta d-flex align-items-center">#}
+    {#                                <div class="d-flex align-items-center">#}
+    {#                                    <i class="bi bi-person"></i> <span class="ps-2">Julia Parker</span>#}
+    {#                                </div>#}
+    {#                                <span class="px-3 text-black-50">/</span>#}
+    {#                                <div class="d-flex align-items-center">#}
+    {#                                    <i class="bi bi-folder2"></i> <span class="ps-2">Politics</span>#}
+    {#                                </div>#}
+    {#                            </div>#}
+    {##}
+    {#                            <hr>#}
+    {##}
+    {#                            <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i#}
+    {#                                    class="bi bi-arrow-right"></i></a>#}
+    {##}
+    {#                        </div>#}
+    {##}
+    {#                    </div>#}
+    {#                </div><!-- End post item -->#}
+    {##}
+    {#                <div class="col-xl-4 col-md-6">#}
+    {#                    <div class="post-item position-relative h-100" data-aos="fade-up" data-aos-delay="200">#}
+    {##}
+    {#                        <div class="post-img position-relative overflow-hidden">#}
+    {#                            <img src="{% static 'assets/img/blog/blog-2.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <span class="post-date">July 17</span>#}
+    {#                        </div>#}
+    {##}
+    {#                        <div class="post-content d-flex flex-column">#}
+    {##}
+    {#                            <h3 class="post-title">Et repellendus molestiae qui est sed omnis</h3>#}
+    {##}
+    {#                            <div class="meta d-flex align-items-center">#}
+    {#                                <div class="d-flex align-items-center">#}
+    {#                                    <i class="bi bi-person"></i> <span class="ps-2">Mario Douglas</span>#}
+    {#                                </div>#}
+    {#                                <span class="px-3 text-black-50">/</span>#}
+    {#                                <div class="d-flex align-items-center">#}
+    {#                                    <i class="bi bi-folder2"></i> <span class="ps-2">Sports</span>#}
+    {#                                </div>#}
+    {#                            </div>#}
+    {##}
+    {#                            <hr>#}
+    {##}
+    {#                            <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i#}
+    {#                                    class="bi bi-arrow-right"></i></a>#}
+    {##}
+    {#                        </div>#}
+    {##}
+    {#                    </div>#}
+    {#                </div><!-- End post item -->#}
+    {##}
+    {#                <div class="col-xl-4 col-md-6" data-aos="fade-up" data-aos-delay="300">#}
+    {#                    <div class="post-item position-relative h-100">#}
+    {##}
+    {#                        <div class="post-img position-relative overflow-hidden">#}
+    {#                            <img src="{% static 'assets/img/blog/blog-3.jpg' %}" class="img-fluid" alt="">#}
+    {#                            <span class="post-date">September 05</span>#}
+    {#                        </div>#}
+    {##}
+    {#                        <div class="post-content d-flex flex-column">#}
+    {##}
+    {#                            <h3 class="post-title">Quia assumenda est et veritati tirana ploder</h3>#}
+    {##}
+    {#                            <div class="meta d-flex align-items-center">#}
+    {#                                <div class="d-flex align-items-center">#}
+    {#                                    <i class="bi bi-person"></i> <span class="ps-2">Lisa Hunter</span>#}
+    {#                                </div>#}
+    {#                                <span class="px-3 text-black-50">/</span>#}
+    {#                                <div class="d-flex align-items-center">#}
+    {#                                    <i class="bi bi-folder2"></i> <span class="ps-2">Economics</span>#}
+    {#                                </div>#}
+    {#                            </div>#}
+    {##}
+    {#                            <hr>#}
+    {##}
+    {#                            <a href="blog-details.html" class="readmore stretched-link"><span>Read More</span><i#}
+    {#                                    class="bi bi-arrow-right"></i></a>#}
+    {##}
+    {#                        </div>#}
+    {##}
+    {#                    </div>#}
+    {#                </div><!-- End post item -->#}
+    {##}
+    {#            </div>#}
+    {##}
+    {#        </div>#}
+    {##}
+    {#    </section><!-- /Recent Posts Section -->#}
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Contacto</h2>
+            <p>Contáctanos</p>
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-6">
+
+                    <div class="row gy-4">
+                        <div class="col-md-6">
+                            <div class="info-item" data-aos="fade" data-aos-delay="200">
+                                <i class="bi bi-geo-alt"></i>
+                                <h3>Dirección</h3>
+                                <p>Av. Salaverry 301, Arequipa</p>
+                                <p>Perú, LATAM</p>
+                            </div>
+                        </div><!-- End Info Item -->
+
+                        <div class="col-md-6">
+                            <div class="info-item" data-aos="fade" data-aos-delay="300">
+                                <i class="bi bi-whatsapp"></i>
+                                <h3>
+                                    <a href="https://wa.me/963078949?text=Hola!%20Quisiera%20una%20demostración%20del%20sistema%20*ColeCheck*"
+                                       target=”_blank”>Cotizar</a></h3>
+                                <p>+51 963 078 949</p>
+                                <p>+51 983 392 239</p>
+                            </div>
+                        </div><!-- End Info Item -->
+
+                        <div class="col-md-6">
+                            <div class="info-item" data-aos="fade" data-aos-delay="400">
+                                <i class="bi bi-envelope"></i>
+                                <h3>Email</h3>
+                                <p>info@colecheck.com</p>
+                                <p>contacto@colecheck.com</p>
+                            </div>
+                        </div><!-- End Info Item -->
+
+                        <div class="col-md-6">
+                            <div class="info-item" data-aos="fade" data-aos-delay="500">
+                                <i class="bi bi-clock"></i>
+                                <h3>Horario</h3>
+                                <p>Lunes - Sábado</p>
+                                <p>9:00 AM - 06:00 PM</p>
+                            </div>
+                        </div><!-- End Info Item -->
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6">
+                    <form action="{% url 'system_app:send-contact' %}" method="post" class="php-email-form"
+                          data-aos="fade-up"
+                          data-aos-delay="200">
+                        {% csrf_token %}
+                        <div class="row gy-4">
+
+                            <div class="col-md-6">
+                                <input type="text" name="name" class="form-control" placeholder="Nombre" required="">
+                            </div>
+
+                            <div class="col-md-6 ">
+                                <input type="email" class="form-control" name="email" placeholder="Correo"
+                                       required="">
+                            </div>
+
+                            <div class="col-12">
+                                <input type="text" class="form-control" name="subject" placeholder="Asunto"
+                                       required="">
+                            </div>
+
+                            <div class="col-12">
+                                <textarea class="form-control" name="message" rows="6" placeholder="Mensaje"
+                                          required=""></textarea>
+                            </div>
+                            <!-- Honeypot Field -->
+                            <div style="display: none;">
+                                <label>Deja este campo vacío</label>
+                                <input type="text" name="honeypot" id="honeypot">
+                            </div>
+                            <div class="col-12 text-center">
+                                <div class="loading">Loading</div>
+                                <div class="error-message"></div>
+                                <div class="sent-message">Su mensaje ha sido enviado. Muchas gracias!</div>
+
+                                <button type="submit">Enviar Mensaje</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div><!-- End Contact Form -->
+
+            </div>
+
+        </div>
+
+    </section><!-- /Contact Section -->
+
+</main>
+
+<footer id="footer" class="footer">
+    <hr>
+    {#    <div class="footer-newsletter">#}
+    {#        <div class="container">#}
+    {#            <div class="row justify-content-center text-center">#}
+    {#                <div class="col-lg-6">#}
+    {#                    <h4>Join Our Newsletter</h4>#}
+    {#                    <p>Subscribe to our newsletter and receive the latest news about our products and services!</p>#}
+    {#                    <form action="forms/newsletter.php" method="post" class="php-email-form">#}
+    {#                        <div class="newsletter-form"><input type="email" name="email"><input type="submit"#}
+    {#                                                                                             value="Subscribe"></div>#}
+    {#                        <div class="loading">Loading</div>#}
+    {#                        <div class="error-message"></div>#}
+    {#                        <div class="sent-message">Your subscription request has been sent. Thank you!</div>#}
+    {#                    </form>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#        </div>#}
+    {#    </div>#}
+
+    <div class="container footer-top ">
+        <div class="row gy-4">
+            <div class="col-lg-4 col-md-6 footer-about">
+                <a href="." class="d-flex align-items-center">
+                    <span class="sitename"><strong>C</strong>ole<strong>C</strong>heck</span>
+                </a>
+
+                <div class="footer-contact pt-3">
+                    <p>Av. Salaverry 301, Arequipa</p>
+                    <p>Perú, LATAM</p>
+                    <p class="mt-3"><strong>WhatsApp:</strong> <span>+51 963 078 949</span></p>
+                    <p><strong>Email:</strong> <span>info@colecheck.com</span></p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-3 footer-links">
+                <h4>Links</h4>
+                <ul>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#hero">Inicio</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#values">Beneficios</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#features">Características</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#services">Servicios</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#pricing">Planes</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4 col-md-3 footer-links">
+                <h4>Servicios</h4>
+                <ul>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#services">Asistencia Automática y Notificaciones
+                        por WhatsApp</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#services">Control Académico y Evaluaciones
+                        Simplificadas</a></li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#services">Administración de Matrículas y Pagos</a>
+                    </li>
+                    <li><i class="bi bi-chevron-right"></i> <a href="#services">Generación de Reportes y Análisis de
+                        Datos</a>
+                    </li>
+                </ul>
+            </div>
+
+            {#            <div class="col-lg-4 col-md-12">#}
+            {#                <h4>Follow Us</h4>#}
+            {#                <p>Cras fermentum odio eu feugiat lide par naso tierra videa magna derita valies</p>#}
+            {#                <div class="social-links d-flex">#}
+            {#                    <a href=""><i class="bi bi-twitter-x"></i></a>#}
+            {#                    <a href=""><i class="bi bi-facebook"></i></a>#}
+            {#                    <a href=""><i class="bi bi-instagram"></i></a>#}
+            {#                    <a href=""><i class="bi bi-linkedin"></i></a>#}
+            {#                </div>#}
+            {#            </div>#}
+
+        </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">ColeCheck</strong>
+            <span>Todos los derechos reservados</span>
+        </p>
+        {#        <div class="credits">#}
+        {#            <!-- All the links in the footer should remain intact. -->#}
+        {#            <!-- You can delete the links only if you've purchased the pro version. -->#}
+        {#            <!-- Licensing information: https://bootstrapmade.com/license/ -->#}
+        {#            <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->#}
+        {#            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>#}
+        {#        </div>#}
+    </div>
+
+</footer>
+
+{#<!-- Scroll Top -->#}
+{#<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i#}
+{#        class="bi bi-arrow-up-short"></i></a>#}
+
+<a href="https://wa.me/963078949?text=Hola!%20Quisiera%20una%20demostración%20del%20sistema%20*ColeCheck*"
+   target=”_blank” class="whatsapp-btn">
+    <i class="bi bi-whatsapp"></i>
+</a>
+
+<!-- Vendor JS Files -->
+<script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}" defer></script>
+<script src="{% static 'assets/vendor/php-email-form/validate.js' %}" defer></script>
+<script src="{% static 'assets/vendor/aos/aos.js' %}" defer></script>
+<script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}" defer></script>
+<script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}" defer></script>
+<script src="{% static 'assets/vendor/imagesloaded/imagesloaded.pkgd.min.js' %}" defer></script>
+<script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}" defer></script>
+<script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}" defer></script>
+
+<!-- Main JS File -->
+<script src="{% static 'assets/js/main.js' %}" defer></script>
+
+</body>
+
+</html>

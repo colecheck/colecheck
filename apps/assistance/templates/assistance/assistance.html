@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block style %}
+    <style>
+        #video {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0px 0px 5px 0px #999;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+
+    </style>
+{% endblock style %}
+
+{% block content %}
+    <a href="{% url 'school_app:home' %}" class="btn btn-danger mx-3 mt-3" type="button">Finalizar Asistencia</a>
+    <h1>Asistencia por QR</h1>
+    <select class="form-control" id="classroom_id" name="classroom" style="width: 100%">
+        <option disabled selected value="">Seleccionar</option>
+        {% for classroom in classrooms %}
+            <option value="{{ classroom.id }}">{{ classroom }}</option>
+        {% endfor %}
+    </select>
+    <hr>
+    <div id="video_id" hidden>
+
+
+        <div class="d-flex justify-content-center">
+            <video id="video" width="350" height="250"></video>
+        </div>
+        <div class="d-flex justify-content-center">
+            <canvas id="canvas" width="300" height="200" style="display:none"></canvas>
+        </div>
+        <hr>
+        <div class="card" id="card_id" hidden>
+            <div class="card-header">
+                Datos del Estudiante
+            </div>
+            <div class="card-body">
+                <div class="row flex-sm-row">
+                    <div class="col-6">
+                        <blockquote class="blockquote mb-0">
+                            <p id="nombre_p_id"><strong>Nombre: </strong><label id="nombre_id"></label></p>
+                            <p id="apellido_p_id"><strong>Apellido: </strong><label id="apellido_id"></label></p>
+                            <p id="dni_p_id"><strong>DNI: </strong><label id="dni_id"></label></p>
+                            <p id="grado_p_id"><strong>Grado: </strong><label id="grado_id"></label></p>
+                            <p id="seccion_p_id"><strong>Sección: </strong><label id="seccion_id"></label></p>
+                        </blockquote>
+                    </div>
+                    <div class="col-6">
+                        <img src="" id="profile_id" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block js %}
+    <script type="application/javascript">
+        const video = document.getElementById('video');
+        let correct_sound = new Audio("/static/sounds/barcode.mp3")
+        let error_sound = new Audio("/static/sounds/error-beep.mp3")
+        let date_time = new Date();
+        let code_generation = date_time.toLocaleString();
+        let students_dic = {}
+        let selected_classroom;
+
+        /*
+        $('#classroom_id').select2({
+            placeholder: 'Selecciona una Opcion',
+        });
+
+         */
+
+
+        // Obtén una referencia al elemento select por su ID
+        let selectElement = document.getElementById("classroom_id");
+
+        // Agrega un evento de cambio al elemento select
+        selectElement.addEventListener("change", function () {
+            // Obtén el valor seleccionado cuando cambia el select
+            selected_classroom = selectElement.value;
+            console.log(selected_classroom)
+
+            // Opcionalmente, oculta el select después de capturar el valor
+            //selectElement.hidden = false;
+            selectElement.disabled = true;
+            document.getElementById("video_id").hidden = false;
+        });
+
+        const constraints = {
+            audio: false,
+            video: {
+                advanced: [{facingMode: "environment"}]
+            }
+        };
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(stream => {
+                // Aquí puedes utilizar el stream para inicializar jsQR
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch((error) => {
+                console.error('Error accessing camera: ', error);
+
+            });
+
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+        let verify_dni = 'a'
+
+        function captureFrame() {
+            // Captura la imagen del video en el lienzo
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Obtener la información de píxeles de la imagen del lienzo
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Decodifica el código QR usando la biblioteca jsQR
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: 'dontInvert',
+            });
+
+            // Si se detectó un código QR, muestra su contenido
+            if (code) {
+                data = code.data.toString();
+                list_data = data.split('-')
+
+                first_name = list_data[0];
+                last_name = list_data[1];
+                _dni = list_data[2];
+                grade = list_data[3];
+                section = list_data[4];
+
+                if (verify_dni === _dni) {
+
+                    //{#console.log("Mismo Alumno")#}
+                } else if (students_dic.hasOwnProperty(_dni)) {
+                    verify_dni = _dni;
+                    error_sound.play();
+                    toastr["warning"]("Alumno escaneado", "Advertencia");
+                    //{#toastr.warning('Alumno escaneado', 'Advertencia');#}
+                } else if (first_name && last_name && _dni && grade && section) {
+                    verify_dni = _dni;
+                    nombre = document.getElementById('nombre_id')
+                    apellido = document.getElementById('apellido_id')
+                    dni = document.getElementById('dni_id')
+                    grado = document.getElementById('grado_id')
+                    seccion = document.getElementById('seccion_id')
+                    //{#nivel = document.getElementById('nivel_id')#}
+
+                    students_dic[_dni] = first_name + last_name
+
+                    document.getElementById('card_id').hidden = false; // visible
+                    document.getElementById('nombre_p_id').hidden = false; // visible
+                    document.getElementById('apellido_p_id').hidden = false; // visible
+                    document.getElementById('dni_p_id').hidden = false; // visible
+                    document.getElementById('grado_p_id').hidden = false; // visible
+                    document.getElementById('seccion_p_id').hidden = false; // visible
+                    //document.getElementById('nivel_p_id').hidden = false; // visible#}
+
+                    nombre.innerText = first_name
+                    apellido.innerText = last_name
+                    dni.innerText = _dni
+                    //{#grado.innerText = GRADE_DIC[grade]#}
+                    grado.innerText = grade
+                    seccion.innerText = section
+                    //{#nivel.innerText = LEVEL_DIC[level]#}
+
+                    data = {
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'dni': _dni,
+                        'grade': grade,
+                        'section': section,
+                        'code_generation': code_generation,
+                        'selected_classroom': selected_classroom
+                        //'level': level
+                    }
+
+                    send_data('GET', '/assistance/register_assistance/', data)
+
+
+                    //{#toastr.success('Alumno Registrado correctamente.!');#}
+                } else {
+                    verify_dni = _dni;
+                    toastr["error"]("Código QR Incorrecto", "Error")
+                    error_sound.play();
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "3000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                }
+            }
+            // Repetir el proceso para detectar códigos QR en cada fotograma
+            requestAnimationFrame(captureFrame);
+        }
+
+        // Iniciar el proceso de captura de cuadros
+        requestAnimationFrame(captureFrame);
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function send_data(method, URL, data) {
+            console.log(method);
+            console.log(URL);
+            console.log(JSON.stringify(data));
+            $.ajax({
+                url: URL,
+                async: true,
+                dataType: 'json',
+                type: method,
+                data: {'data': JSON.stringify(data)},
+                //{#headers: {"X-CSRFToken": csrftoken},#}
+                success: function (response) {
+                    //Perform actions with the response data from the view
+                    correct_sound.play()
+
+                    toastr["success"]("Alumno registrado", "Éxito")
+
+                    let imageUrl = response.profileImageUrl;
+                    $("#profile_id").attr("src", imageUrl);
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                },
+                error: function (response) {
+                    toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                    error_sound.play();
+                }
+            });
+
+            /*
+            fetch(URL, {
+                method: method,
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+                    'X-CSRFToken': csrftoken,
+                },
+                body: JSON.stringify(data) //JavaScript object of data to POST
+            })
+                .then((resp) => resp.json())
+                .then(function (data) {
+                    console.log(data)
+                    //Perform actions with the response data from the view
+                    correct_sound.play()
+
+                    toastr["success"]("Alumno registrado", "Éxito")
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                })
+                .catch(function (error) {
+                    console.log(error)
+                    toastr["warning"](error.content, error.title)
+                    error_sound.play();
+                })
+
+             */
+        }
+    </script>
+
+{% endblock js %}

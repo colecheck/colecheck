@@ -1,0 +1,553 @@
+{% extends "assistant/AssistantLayout.html" %}
+
+{% block content %}
+
+    <div id="container" class="lg:p-8 p-3">
+        {% if request.user.is_superuser %}
+            <h2>Generar Duplicado de Fotocheck Masivo</h2>
+            <div class="flex flex-col gap-6 pb-6 md:flex-row md:gap-6 md:justify-between">
+                <div id="levels_select" class="flex flex-col gap-4 md:w-1/4" {% if only_level %}
+                     style="display: none;"  {% endif %}>
+                    <label for="level">Selecciona el <strong>Nivel:</strong></label>
+                    <select id="level" class="p-2 border-2 rounded-md" name="level"
+                            onchange="if (this.selectedIndex) updateFilteredData();">
+                        <option class="p-2" value="all">--Todos--</option>
+                        {% for lev in levels %}
+                            <option class="p-2" value="{{ lev.name }}">{{ lev.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex flex-col gap-4 md:w-1/4">
+                    <label for="cars">Selecciona el <strong>Grado:</strong></label>
+                    <select id="grade" class="p-2 border-2 rounded-md" {% if not one_level %}disabled{% endif %}
+                            onchange="if (this.selectedIndex) updateFilteredData();">
+                        <option value="all">--Todos--</option>
+                        {% if one_level %}
+                            {% for grad in ed_level.grades.all %}
+                                <option value="{{ grad.name }}">{{ grad.name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div id="sections_select" class="flex flex-col gap-4 md:w-1/4" {% if only_section %}
+                     style="display: none;"  {% endif %}>
+                    <label for="cars">Selecciona la <strong>Sección:</strong></label>
+                    <select id="section" class="p-2 border-2 rounded-md" {% if not one_grade %}disabled{% endif %}
+                            onchange="if (this.selectedIndex) updateFilteredData();">
+                        <option value="all">--Todas--</option>
+                        {% if one_grade %}
+                            {% for sect in grade.sections.all %}
+                                <option value="{{ sect.name }}">{{ sect.name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                {% if one_section %}
+                    <div>
+                        <button type="button" id="send_whatsapp" onclick="sendCreateFotochecks('{{ section.id }}');"
+                                class="bg-green-500 disabled:opacity-75 text-white font-bold py-2 px-4 rounded">
+                            Descargar
+                            PDF
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+
+            <h2>Generar Qr Masivo</h2>
+            <form id="selection-form" class="bg-white p-8 rounded shadow-md w-full max-w-md mb-4">
+                <div class="mb-4">
+                    <label for="levels" class="block text-gray-700 text-sm font-bold mb-2">Nivel:</label>
+                    <select id="levels" name="levels"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <option value="">Seleccione un nivel</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="grades" class="block text-gray-700 text-sm font-bold mb-2">Grado:</label>
+                    <select id="grades" name="grades"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            disabled>
+                        <option value="">Seleccione un grado</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="sections" class="block text-gray-700 text-sm font-bold mb-2">Sección:</label>
+                    <select id="sections" name="sections"
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            disabled>
+                        <option value="">Seleccione una sección</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <button id="submit-btn" type="submit"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            disabled>
+                        Enviar Datos
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+
+        <div class="container mx-auto px-4">
+            <div class="lg:w-1/3 w-full bg-gray-100 rounded-lg shadow-md p-6">
+                <div class="mb-4">
+                    <label for="student" class="block text-sm font-medium text-gray-700">Buscar Estudiante</label>
+                    <select id="student"
+                            class="js-example-placeholder-single w-full border-gray-300 rounded-md shadow-sm">
+                        {% for student in students %}
+                            <option></option>
+                            <option value="{{ student.dni }}">{{ student.last_name }} {{ student.first_name }} -
+                                {{ student.grade.short_name }}{{ student.section.name }} - {{ student.dni }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="amount" class="block text-sm font-medium text-gray-700">Precio Duplicado (S/):</label>
+                    <input type="number" id="amount" name="amount" class="p-2 border rounded-md w-full"
+                           placeholder="Ingrese el monto">
+                </div>
+
+                <div class="flex justify-center">
+                    <button id="searchBtn" onclick="showConfirmation();"
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 w-full">
+                        <i class="">Generar Duplicado</i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="confirmModal"
+             class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-800 bg-opacity-50">
+            <div class="bg-white p-6 rounded-md shadow-lg w-3/4 md:w-1/2 lg:w-1/3 xl:w-1/4">
+                <h2 class="text-lg font-semibold mb-4">Confirmar Generación de Duplicado</h2>
+                <p class="mb-2">Estudiante: <span id="confirmStudent" class="font-medium"></span></p>
+                <p class="mb-4">Monto (S/): <span id="confirmAmount" class="font-medium"></span></p>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-2">
+                    <button onclick="sendCreateFotochecks('false');"
+                            class="px-4 py-2 bg-green-500 text-white rounded-md transition-colors duration-300 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                        Confirmar
+                    </button>
+                    <button onclick="closeConfirmation();"
+                            class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md mt-2 md:mt-0 transition-colors duration-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block js %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script type="text/javascript">
+        // Funciones para select2
+
+        $(document).ready(function () {
+            $('.js-example-placeholder-single').select2({
+                placeholder: "Nombre, apellido o DNI",
+                allowClear: true,
+                minimumInputLength: 3,
+                openOnEnter: true,
+                openOnFocus: true,
+                language: {
+                    noResults: function () {
+                        return "No se encontro al alumno";
+                    },
+                    inputTooShort: function () {
+                        return ''; // Disable the "Please enter 3 or more characters" message
+                    },
+                }
+            });
+        });
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+        });
+    </script>
+    <script type="application/javascript">
+        function closeConfirmation() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        function showConfirmation() {
+            let studentSelect = document.getElementById('student');
+            let studentValue = studentSelect.options[studentSelect.selectedIndex].text;
+            let amountValue = document.getElementById('amount').value;
+
+            if (studentValue.trim() === '' || amountValue.trim() === '') {
+                alert('Por favor complete todos los campos.');
+                return;
+            }
+
+            if (amountValue && !/^(\d+(\.\d{1,2})?)$/.test(amountValue)) {
+                alert('Ingrese un monto válido. Ejemplo válido: 12.50');
+                return;
+            }
+
+            document.getElementById('confirmStudent').textContent = studentValue;
+            document.getElementById('confirmAmount').textContent = amountValue;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function sendCreateFotochecks(section_id) {
+            const url = "{% url 'assistance_app:send_create_fotocheck' slug=school.slug %}"
+            let dataStudent = section_id;
+            let manyStudent = true;
+            let amount = 0;
+
+            if (section_id === 'false') {
+                dataStudent = document.getElementById("student").value;
+                manyStudent = false;
+
+                let studentValue = document.getElementById('student').value;
+                let amountValue = document.getElementById('amount').value;
+
+                if (studentValue.trim() === '' || amountValue.trim() === '') {
+                    alert('Por favor complete todos los campos.');
+                    return;
+                }
+
+                if (amountValue && !/^(\d+(\.\d{1,2})?)$/.test(amountValue)) {
+                    alert('Ingrese un monto válido. Ejemplo válido: 12.50');
+                    return;
+                }
+
+                amount = amountValue;
+                closeConfirmation();
+                document.getElementById('amount').value = '';
+            }
+
+            const data = {
+                section: dataStudent,
+                manyStudent: manyStudent,
+                amount: amount
+            };
+
+            // let dniStudent = document.getElementById("student").value
+            $("#student").val('').trigger('change');
+
+            $.ajax({
+                url: url,
+                async: true,
+                dataType: 'json',
+                type: 'POST',
+                data: {'data': JSON.stringify(data)},
+                success: function (response) {
+                    let link = document.createElement('a');
+                    link.href = "data:application/pdf;base64," + response.student_fotochecks_PDF;
+                    link.download = "Fotochecks.pdf";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                    toastr["success"]("Fotochecks Creados", "Éxito")
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                },
+                error: function (response) {
+                    toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                }
+            });
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        let level = urlParams.get('level');
+
+        if (document.getElementById("levels_select").style.display == "none") {
+            level = "{{ ed_level.name }}";
+        }
+        const grade = urlParams.get('grade');
+        let section = urlParams.get('section');
+        if (document.getElementById("sections_select").style.display == "none") {
+            section = "{{ section.name }}";
+        }
+
+
+        if (level) {
+            document.getElementById('level').value = level;
+        } else {
+            document.getElementById('level').value = "all";
+        }
+        if (grade && level) {
+            document.getElementById('grade').value = grade;
+        } else {
+            document.getElementById('grade').value = "all";
+        }
+        if (section && grade && level) {
+            document.getElementById('section').value = section;
+        } else {
+            document.getElementById('section').value = "all";
+        }
+
+        function updateFilteredData() {
+            let select_level = document.getElementById('level').value;
+
+            // Si solo existe un nivel en el colegio
+            if (document.getElementById("levels_select").style.display == "none") {
+                select_level = "{{ed_level.name}}";
+            }
+
+            let select_grade = document.getElementById('grade').value;
+            let select_section = document.getElementById('section').value;
+
+            if (document.getElementById("sections_select").style.display == "none") {
+                select_section = "{{section.name}}";
+            }
+
+
+            let url = '{% url "assistance_app:create_fotocheck" slug=school.slug %}?'
+            if (select_level != "all") {
+                url += "level=" + select_level + '&';
+            }
+            console.log(`${select_level} and ${level}`)
+
+            if (select_level == level && select_grade != "all" && select_level != "all") {
+                url += "grade=" + select_grade + '&';
+            }
+            if (select_level == level && select_grade == grade && select_level != "all" && select_grade != "all" && select_section != "all") {
+                url += "section=" + select_section + '&';
+            }
+
+
+            window.location.href = url;
+        }
+
+        // Event listeners for select inputs
+        document.getElementById('level').addEventListener('change', updateFilteredData);
+        document.getElementById('grade').addEventListener('change', updateFilteredData);
+        document.getElementById('section').addEventListener('change', updateFilteredData);
+
+        function createFotocheckStudent() {
+            let e = document.getElementById("student").value
+            $("#student").val('').trigger('change');
+        }
+
+        function handleClick() {
+            $("#student").val('').trigger('change');
+        }
+
+        $(document).ready(function () {
+            const slug = "{{ school.slug }}";
+
+            // Cargar niveles al cargar la página
+            $.getJSON(`/get_levels?slug=${slug}`, function (data) {
+                const levelsSelect = $('#levels');
+                data.forEach(function (level) {
+                    levelsSelect.append(new Option(level.fields.name, level.pk));
+                });
+            });
+
+            // Cargar grados cuando se selecciona un nivel
+            $('#levels').change(function () {
+                const levelId = $(this).val();
+                const gradesSelect = $('#grades');
+                gradesSelect.empty().append(new Option('Seleccione un grado', ''));
+                $('#sections').empty().append(new Option('Seleccione una sección', '')).prop('disabled', true);
+                $('#submit-btn').prop('disabled', true);
+
+                if (levelId) {
+                    $.getJSON(`/get_grades?slug=${slug}&level_id=${levelId}`, function (data) {
+                        data.forEach(function (grade) {
+                            gradesSelect.append(new Option(grade.fields.name, grade.pk));
+                        });
+                        gradesSelect.prop('disabled', false);
+                    });
+                } else {
+                    gradesSelect.prop('disabled', true);
+                }
+            });
+
+            // Cargar secciones cuando se selecciona un grado
+            $('#grades').change(function () {
+                const gradeId = $(this).val();
+                const sectionsSelect = $('#sections');
+                sectionsSelect.empty().append(new Option('Seleccione una sección', ''));
+                $('#submit-btn').prop('disabled', true);
+
+                if (gradeId) {
+                    $.getJSON(`/get_sections?grade_id=${gradeId}`, function (data) {
+                        data.forEach(function (section) {
+                            sectionsSelect.append(new Option(section.fields.name, section.pk));
+                        });
+                        sectionsSelect.prop('disabled', false);
+                    });
+                } else {
+                    sectionsSelect.prop('disabled', true);
+                }
+            });
+
+            // Habilitar el botón de enviar cuando se selecciona una sección
+            $('#sections').change(function () {
+                const sectionId = $(this).val();
+                if (sectionId) {
+                    $('#submit-btn').prop('disabled', false);
+                } else {
+                    $('#submit-btn').prop('disabled', true);
+                }
+            });
+
+            // Manejar el envío del formulario
+            $('#selection-form').submit(function (event) {
+                event.preventDefault();
+                const level = $('#levels').val();
+                const grade = $('#grades').val();
+                const section = $('#sections').val();
+
+                // Aquí puedes hacer lo que necesites con los datos seleccionados
+                {#alert(`Nivel: ${level}, Grado: ${grade}, Sección: ${section}`);#}
+                const data = {
+                    'level_id': level,
+                    'grade_id': grade,
+                    'section_id': section
+                }
+
+                {#const url = "{% url 'assistance_app:send_create_qrs' slug=school.slug section_id=section %}"#}
+                try {
+                    const url = "/{{ school.slug }}/send_create_qrs/" + section + "/" + grade + "/";
+                    {#const url = "{% url 'assistance_app:send_create_qrs' section_id=section %}"#}
+
+                    window.location.href = url;
+
+                    toastr["success"]("QR's Creados", "Éxito")
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                } catch (err) {
+                    toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                }
+                {#$.ajax({#}
+                {#    url: url,#}
+                {#    async: true,#}
+                {#    dataType: 'json',#}
+                {#    type: 'POST',#}
+                {#    data: {'data': JSON.stringify(data)},#}
+                {#    success: function (response) {#}
+                {#        let link = document.createElement('a');#}
+                {#        link.href = "data:application/pdf;base64," + response.student_fotochecks_PDF;#}
+                {#        link.download = "qrs.pdf";#}
+                {#        document.body.appendChild(link);#}
+                {#        link.click();#}
+                {#        document.body.removeChild(link);#}
+                {##}
+                {#        toastr["success"]("QR's Creados", "Éxito")#}
+                {#        toastr.options = {#}
+                {#            "closeButton": false,#}
+                {#            "debug": false,#}
+                {#            "newestOnTop": false,#}
+                {#            "progressBar": true,#}
+                {#            "positionClass": "toast-top-right",#}
+                {#            "preventDuplicates": false,#}
+                {#            "onclick": null,#}
+                {#            "showDuration": "300",#}
+                {#            "hideDuration": "1000",#}
+                {#            "timeOut": "1000",#}
+                {#            "extendedTimeOut": "1000",#}
+                {#            "showEasing": "swing",#}
+                {#            "hideEasing": "linear",#}
+                {#            "showMethod": "fadeIn",#}
+                {#            "hideMethod": "fadeOut"#}
+                {#        }#}
+                {##}
+                {#    },#}
+                {#    error: function (response) {#}
+                {#        toastr["warning"](response.responseJSON.content, response.responseJSON.title)#}
+                {#        toastr.options = {#}
+                {#            "closeButton": false,#}
+                {#            "debug": false,#}
+                {#            "newestOnTop": false,#}
+                {#            "progressBar": true,#}
+                {#            "positionClass": "toast-top-right",#}
+                {#            "preventDuplicates": false,#}
+                {#            "onclick": null,#}
+                {#            "showDuration": "300",#}
+                {#            "hideDuration": "1000",#}
+                {#            "timeOut": "1000",#}
+                {#            "extendedTimeOut": "1000",#}
+                {#            "showEasing": "swing",#}
+                {#            "hideEasing": "linear",#}
+                {#            "showMethod": "fadeIn",#}
+                {#            "hideMethod": "fadeOut"#}
+                {#        }#}
+                {#    }#}
+                //});
+            });
+        });
+
+    </script>
+
+{% endblock js %}

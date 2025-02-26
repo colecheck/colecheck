@@ -1,0 +1,352 @@
+{% extends "assistant/AssistantLayout.html" %}
+
+{% block content %}
+
+<div id="container" class="max-h-screen p-4 grid lg:grid-cols-2 grid-cols-1 justify-items-center ">
+    <div class="relative w-full flex flex-col items-center overflow-hidden"><!--el realtive es para el card-->
+        <h1 class="text-2xl font-bold">Revisar Fotocheck</h1>
+        <div class="relative text-center mb-1 z-10">
+            <video id="video" class="lg:w-[22rem] lg:h-[16rem] w-full h-[18rem] mt-2"></video>
+            <canvas id="canvas" class="w-[19rem] h-[13rem]"  style="display:none"></canvas>
+            <div id="list-toast" class="hidden">
+                <div id="toast" class="absolute top-2 right-2 lg:bottom-full lg:w-[10rem] lg:h-[3rem] rounded bg-green-500 text-white p-2 flex items-center">
+                    <i id="toast-icon" class="material-symbols-sharp">done</i>
+                    <p id="toast-text" class="text-xs">Estudiante encontrado</p>
+                </div>
+            </div>
+        </div>
+        <div class="relative lg:h-[18rem] w-[1rem] z-20">
+            <div id="student-card" class="fixed bottom-0 right-0 left-0 translate-y-full lg:absolute lg:-translate-x-1/2 transition z-20 ease-in-out border rounded-lg shadow-md py-4 px-8 bg-white">
+                <p class="text-center font-bold text-lg">Datos del Estudiante</p>
+                <div class="grid grid-cols-2 mt-4 gap-2">
+                    <div class="flex flex-col gap-2">
+                        <div>
+                            <p><strong>Nombre:</strong> </p>
+                            <p id="name_id">Elisban Daymert</p>
+                        </div>
+                        <div>
+                            <p><strong>Apellido:</strong></p>
+                            <p id="lastname_id">Laime Niera</p>
+                        </div>
+                        <p><strong>DNI:</strong><span id="dni_id">60438344</span></p>
+                        <p><strong>Grado:</strong><span id="grade_id">5to A</span></p>
+                    </div>
+                    <div class="flex justify-center items-center">
+                        <img class="w-[7rem]" src="https://banner2.cleanpng.com/20180701/yig/kisspng-computer-icons-silhouette-my-account-icon-5b388d48343f50.355577991530432840214.jpg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script type="text/javascript">
+    // Funciones para select2
+
+    $(document).ready(function() {
+        $('.js-example-placeholder-single').select2({
+            placeholder: "Buscar alumno por apellido o DNI",
+            allowClear: true,
+            minimumInputLength: 3,
+            openOnEnter: true,
+            openOnFocus: true,
+            language: {
+                noResults: function() {
+                    return "No se encontro al alumno";
+                },
+                inputTooShort: function () {
+                    return ''; // Disable the "Please enter 3 or more characters" message
+                },
+            }
+        });
+    });
+    $(document).on('select2:open', () => {
+        document.querySelector('.select2-search__field').focus();
+    });
+</script>
+
+<script type="application/javascript">
+    const video = document.getElementById('video');
+    const buttonActivateCamera = document.getElementById('activateCamera');
+    let correct_sound = new Audio("/static/sounds/barcode.mp3")
+    let error_sound = new Audio("/static/sounds/error-beep.mp3")
+    let date_time = new Date();
+    let students_dni = {}
+    let lastQRDNI = -1;
+
+    const all_students_data = {
+        "62959362": true,
+        "77362065": true,
+        "77596256": true,
+        "62819027": true,
+        "62885827": true,
+        "63230709": true,
+        "62961023": true,
+        "63084308": true,
+        "63693768": true,
+        "63231054": true,
+        "62258139": true,
+        "63330687": true,
+        "62960145": true,
+        "63231481": true,
+        "62888127": true,
+        "23022682": true,
+        "63280063": true,
+        "63021802": true,
+        "61368253": true,
+        "62730937": true,
+        "62724045": true,
+        "62653041": true,
+        "74270334": true,
+        "62702062": true,
+        "62755953": true,
+        "62754605": true,
+        "62702470": true,
+        "62583041": true,
+        "62793657": true,
+        "62628592": true,
+        "61891889": true,
+        "61839849": true,
+        "73914744": true,
+        "81078667": true,
+        "61847836": true,
+        "73396802": true,
+        "60655196": true,
+        "62564283": true,
+        "61847470": true,
+        "62350865": true,
+        "62351054": true,
+        "61879971": true,
+        "61799578": true,
+        "61799631": true,
+        "61456951": true,
+        "61458369": true,
+        "61450783": true,
+        "61459258": true,
+        "61458270": true,
+        "61174610": true,
+        "61327859": true,
+        "61456291": true,
+        "61071123": true,
+        "61234831": true,
+        "61182844": true,
+        
+        "70711328": true,
+        "60438278": true,
+        "60438313": true,
+        "60438290": true,
+        "60477887": true,
+        "60477888": true,
+        "60477923": true,
+        "60438294": true,
+        "60477920": true,
+        "60438281": true,
+        "62167480": true,
+        "60477902": true,
+        "74475936": true,
+        "60477889": true,
+        "60477874": true,
+        "60534517": true,
+        "63123290": true,
+        "61049417": true,
+        "60438254": true,
+        "60438344": true,
+        "63426707": true,
+        "60438338": true,
+        "60477855": true,
+        "63426730": true,
+        "60018649": true,
+        "60438299": true,
+        "60477865": true,
+        "60477860": true,
+        "61706660": true,
+        "60018624": true,
+        "60534467": true,
+        "70957455": true,
+        "60590469": true,
+        "60534521": true,
+        "60529175": true,
+        "60590460": true,
+        "60534498": true,
+        "78886090": true,
+        "60534458": true,
+        "61173996": true,
+        "60534455": true,
+        "60477911": true,
+        "60438325": true,
+        "60534522": true,
+        "61251050": true,
+        "60534482": true,
+        "60590468": true,
+        "60534475": true,
+        "60534487": true,
+        "60590452": true,
+        "60534473": true,
+        "60534535": true,
+        "60699885": true,
+        "60699860": true,
+        "61579302": true,
+        "61894489": true,
+        "61579314": true,
+        "60590497": true,
+        "61579333": true,
+        "61579335": true,
+        "61366339": true,
+        "61579325": true,
+        "61579341": true,
+        "60590455": true,
+        "61579324": true,
+        "61459836": true,
+        "61879781": true,
+        "61579323": true,
+        "61579305": true,
+        "60699875": true,
+        "60590518": true,
+        "71907297": true,
+        "62048627": true,
+        "60590541": true,
+        "61706721": true,
+        "61579343": true,
+        "60699905": true,
+        "61706661": true,
+        "61706691": true,
+        "61991292": true,
+        "61706692": true,
+        "60699923": true,
+        "61706698": true,
+        "61706705": true,
+        "60699910": true,
+        "62167467": true,
+        "62222992": true,
+        "63167453": true,
+        "61706737": true,
+        "61800152": true,
+        "61706689": true,
+        "63042128": true,
+        "62167471": true,
+        "76708769": true,
+        "74192351": true,
+        "62222968": true,
+        "62089293": true,
+        "61706736": true,
+        "61706713": true,
+        "62409704": true,
+        "61706749": true
+    };
+
+    const constraints = {
+        audio: false,
+        video: {
+            advanced: [{facingMode: "environment"}]
+        }
+    };
+
+    navigator.mediaDevices.getUserMedia(constraints)
+    .then(stream => {
+        // Aquí puedes utilizar el stream para inicializar jsQR
+        video.srcObject = stream;
+        video.play();
+    })
+    .catch((error) => {
+        console.log('Error accessing camera: ', error);                
+    });
+        
+
+
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+
+    function captureFrame() {
+        // Captura la imagen del video en el lienzo
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Obtener la información de píxeles de la imagen del lienzo
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Decodifica el código QR usando la biblioteca jsQR
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: 'dontInvert',
+        });
+        
+        // Si se detectó un código QR, muestra su contenido
+        if (code) {
+            let encripted_data = code.data.toString();
+            let data = decrypt(encripted_data)
+            let list_data = data.split('$');
+
+            let _dni = list_data[2];
+            if (_dni && _dni !== lastQRDNI) {
+                let first_name = list_data[0];
+                let last_name = list_data[1];
+                let grade = list_data[3];
+                let section = list_data[4];
+                
+                if(_dni) {
+                    lastQRDNI = _dni;
+                    document.getElementById('name_id').innerText = first_name
+                    document.getElementById('lastname_id').innerText = last_name
+                    document.getElementById('dni_id').innerText = " " + _dni
+                    document.getElementById('grade_id').innerText = " "+ grade + section
+                    document.getElementById('student-card').classList.add('translate-y-full')
+                    setTimeout(()=>{
+                        document.getElementById('student-card').classList.remove('translate-y-full')
+                    }, 300) 
+                    data = {
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'dni': _dni,
+                        'grade': grade,
+                        'section': section,
+                    }
+
+
+                    console.log("datos de usuario:", data)
+          
+                } else {
+                    //Qr invalido
+                    // document.getElementById('toast').classList.remove('bg-green-500');
+                    // document.getElementById('toast').classList.add('bg-orange-500');
+                    // document.getElementById('toast-text').innerText = 'QR Inválido';
+                    // document.getElementById('toast-icon').innerText = 'error';
+                    // error_sound.play();
+                    // showHideToast();
+
+                }
+            }
+        }
+        // Repetir el proceso para detectar códigos QR en cada fotograma
+        requestAnimationFrame(captureFrame);
+    }
+
+    // Iniciar el proceso de captura de cuadros
+    requestAnimationFrame(captureFrame);
+
+
+    const list_of_chars = ['á', 'Á', 'é', 'É', 'í', 'Í', 'ó', 'Ó', 'ú', 'Ú', 'ñ', 'Ñ'];
+    function decrypt(encryptedText, key=3) {
+        let decryptedText = '';
+        for (let i = 0; i < encryptedText.length; i++) {
+            let char = encryptedText[i];
+            if (list_of_chars.includes(char)) {
+                decryptedText += char;
+            } else if (char.match(/[a-z]/i)) {
+                let start = char.match(/[a-z]/) ? 'a'.charCodeAt(0) : 'A'.charCodeAt(0);
+                decryptedText += String.fromCharCode((char.charCodeAt(0) - start - key + 26) % 26 + start);
+            } else if (char.match(/[0-9]/)) {
+                decryptedText += String.fromCharCode((char.charCodeAt(0) - '0'.charCodeAt(0) - key + 10) % 10 + '0'.charCodeAt(0));
+            } else {
+                decryptedText += char;
+            }
+        }
+        return decryptedText;
+    }
+</script>
+
+{% endblock js %}

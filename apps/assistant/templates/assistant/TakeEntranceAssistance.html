@@ -1,0 +1,343 @@
+{% extends "assistant/AssistantLayout.html" %}
+
+{% block content %}
+
+    <div id="container" class="max-h-screen p-4 grid lg:grid-cols-2 grid-cols-1 justify-items-center ">
+        <div class="w-full">
+            <div class="flex gap-2 mb-2 items-center">
+                <fieldset class="border p-1 w-[70%]">
+                    <legend class="font-semibold">Elige el turno de la asistencia</legend>
+                    <div class="flex gap-4">
+                        <select id="type" onchange="handleClick()"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option id="entrance" value="entrance">Entrada</option>
+                            <option id="exit" value="exit">Salida</option>
+                            {% if school.is_double_turn %}
+                                <option id="entrance-two" value="entrance-two">Entrada - 2</option>
+                                <option id="exit-two" value="exit-two">Salida - 2</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </fieldset>
+                <a href="{% url 'assistance_app:general_assistance_report' slug=school.slug %}"
+                   class="w-[25%] h-[2.5rem] lg:p-2  rounded-md text-white -p-1 bg-red-500 text-sm leading-3 flex text-center items-center">Finalizar
+                    Asistencia</a>
+            </div>
+            <div class="flex items-center gap-2 pb-2">
+                <select id="student" class="js-example-placeholder-single w-[82%]" name="student">
+                    {% for student in students %}
+                        <option></option>
+                        <option value="{{ student.dni }}">{{ student.last_name }} {{ student.first_name }} /
+                            {{ student.grade.short_name }}{{ student.section.name }} {{ student.dni }}</option>
+                    {% endfor %}
+                </select>
+                <button id="searchBtn" onclick="takeManualAssistance();"
+                        class="p-0 text-center rounded-md bg-green-500 text-white w-[15%]">
+                    <i class="material-symbols-sharp">check</i>
+                </button>
+            </div>
+        </div>
+
+        <div id="reader" class="w-full max-w-md rounded-lg overflow-hidden"></div>
+
+        <div class="w-full flex flex-col items-center mx-4 lg:mx-0">
+            <div class="relative lg:h-72 lg:w-1/4 z-20 w-full max-w-screen-lg mx-auto">
+                <div id="student-card"
+                     class="transition z-20 ease-in-out fixed lg:absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full border-2 border-gray-400 rounded-lg shadow-md py-4 px-8 lg:w-72 bg-white w-full">
+                    <p class="text-center font-bold text-lg border-b-2 border-gray-400 mb-4 pb-2">Datos del
+                        Estudiante</p>
+                    <div class="grid grid-cols-2 mt-4 gap-2">
+                        <div class="flex flex-col gap-2 text-center">
+                            <div>
+                                <strong id="name_id">Elisban Daymert</strong>
+                                <p id="lastname_id">Laime Niera</p>
+                            </div>
+                            <p class="mt-1"><strong id="grade_id" style="font-size: 18px;">5to A</strong></p>
+                        </div>
+                        <div class="text-center">
+                            <img class="w-28 lg:w-32 mx-auto" id="profile_id"
+                                 src="https://banner2.cleanpng.com/20180701/yig/kisspng-computer-icons-silhouette-my-account-icon-5b388d48343f50.355577991530432840214.jpg"
+                                 alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+
+            <div class="flex flex-col items-center pb-10">
+                <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="/docs/images/people/profile-picture-3.jpg" alt="Bonnie image"/>
+                <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Bonnie Green</h5>
+                <span class="text-sm text-gray-500 dark:text-gray-400">Visual Designer</span>
+            </div>
+        </div>
+
+        -->
+    </div>
+
+
+{% endblock content %}
+
+{% block js %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        // Funciones para select2
+        $(document).ready(function () {
+            $('.js-example-placeholder-single').select2({
+                placeholder: "Buscar alumno por apellido o DNI",
+                allowClear: true,
+                minimumInputLength: 3,
+                openOnEnter: true,
+                openOnFocus: true,
+                language: {
+                    noResults: function () {
+                        return "No se encontro al alumno";
+                    },
+                    inputTooShort: function () {
+                        return ''; // Disable the "Please enter 3 or more characters" message
+                    },
+                }
+            });
+        });
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+        });
+    </script>
+
+    <script type="application/javascript">
+        let correct_sound = new Audio("/static/sounds/barcode.mp3")
+        let error_sound = new Audio("/static/sounds/error-beep.mp3")
+        let date_time = new Date();
+        let students_dni = {}
+        let lastQRDNI = -1;
+
+        function onScanSuccess(decodedText, decodedResult) {
+
+            let encripted_data = decodedText;
+            let data = decrypt(encripted_data)
+            let list_data = data.split('$');
+
+            let _dni = list_data[2];
+
+            if (_dni && _dni !== lastQRDNI) {
+                lastQRDNI = _dni
+                let thisDNI = _dni
+                setTimeout(() => {
+                    if (lastQRDNI == thisDNI) {
+                        lastQRDNI = -1;
+                    }
+                }, 5000)
+                let first_name = list_data[0];
+                let last_name = list_data[1];
+                let grade = list_data[3];
+                let section = list_data[4];
+
+                if (students_dni.hasOwnProperty(_dni)) {
+                    error_sound.play();
+                    toastr["warning"]("Alumno escaneado", "Advertencia");
+                } else if (_dni) {
+                    students_dni[_dni] = _dni
+                    document.getElementById('name_id').innerText = first_name
+                    document.getElementById('lastname_id').innerText = last_name
+                    // document.getElementById('dni_id').innerText = " " + _dni
+                    document.getElementById('grade_id').innerText = " " + grade + " - " + section
+                    document.getElementById('student-card').classList.add('translate-y-full')
+                    setTimeout(() => {
+                        document.getElementById('student-card').classList.remove('translate-y-full')
+                    }, 300)
+                    data = {
+                        'first_name': first_name,
+                        'last_name': last_name,
+                        'dni': _dni,
+                        'grade': grade,
+                        'section': section,
+                    }
+
+                    sendAssistance(_dni);
+
+                } else {
+
+                    toastr["error"]("Código QR Incorrecto", "Error")
+                    error_sound.play();
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "3000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                }
+            }
+        }
+
+        function onScanFailure(error) {
+            // console.warn("Scan failure:", error);
+        }
+
+        function startScanning() {
+            const html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                {facingMode: "environment"},
+                {fps: 10, qrbox: 200, aspectRatio: 0.75},
+                onScanSuccess,
+                onScanFailure
+            ).catch(err => {
+                console.error("Unable to start scanning:", err);
+            });
+        }
+
+        window.addEventListener('load', startScanning);
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function searchResults() {
+            let searchText = document.getElementById('searchInput').value
+            const url = new URL(window.location.href);
+            url.searchParams.set('search', searchText);
+            history.replaceState(null, null, url.href);
+        }
+
+        function takeManualAssistance() {
+            var e = document.getElementById("student").value
+            sendAssistance(e)
+            $("#student").val('').trigger('change');
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        function sendAssistance(student_dni) {
+            const type = document.getElementById('type').value;
+            let url;
+            if (type === 'entrance') {
+                url = '{% url "assistance_app:register_entrance_assistance" slug=school.slug %}';
+            } else if (type === 'exit') {
+                url = '{% url "assistance_app:register_exit_assistance" slug=school.slug %}';
+            } else if (type === 'entrance-two') {
+                url = '{% url "assistance_app:register_entrance_two_assistance" slug=school.slug %}';
+            } else if (type === 'exit-two') {
+                url = '{% url "assistance_app:register_exit_two_assistance" slug=school.slug %}';
+            }
+
+            const data = {dni: student_dni}
+
+            $.ajax({
+                url: url,
+                async: true,
+                dataType: 'json',
+                type: 'POST',
+                data: {'data': JSON.stringify(data)},
+                success: function (response) {
+                    //Perform actions with the response data from the view
+                    correct_sound.play()
+
+                    toastr["success"]("Alumno registrado", "Éxito")
+
+                    let imageUrl = response.image_path;
+                    $("#profile_id").attr("src", imageUrl);
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                },
+                error: function (response) {
+                    error_sound.play();
+
+                    toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                }
+            });
+
+        }
+
+        function handleClick() {
+            $("#student").val('').trigger('change');
+        }
+
+        const list_of_chars = ['á', 'Á', 'é', 'É', 'í', 'Í', 'ó', 'Ó', 'ú', 'Ú', 'ñ', 'Ñ'];
+
+        function decrypt(encryptedText, key = 3) {
+            let decryptedText = '';
+            for (let i = 0; i < encryptedText.length; i++) {
+                let char = encryptedText[i];
+                if (list_of_chars.includes(char)) {
+                    decryptedText += char;
+                } else if (char.match(/[a-z]/i)) {
+                    let start = char.match(/[a-z]/) ? 'a'.charCodeAt(0) : 'A'.charCodeAt(0);
+                    decryptedText += String.fromCharCode((char.charCodeAt(0) - start - key + 26) % 26 + start);
+                } else if (char.match(/[0-9]/)) {
+                    decryptedText += String.fromCharCode((char.charCodeAt(0) - '0'.charCodeAt(0) - key + 10) % 10 + '0'.charCodeAt(0));
+                } else {
+                    decryptedText += char;
+                }
+            }
+            return decryptedText;
+        }
+    </script>
+
+{% endblock js %}

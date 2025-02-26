@@ -1,0 +1,94 @@
+{% extends "assistant/AssistantLayout.html" %}
+{% block content %}
+
+
+
+<div id="container" class="w-[100%] lg:p-12 p-3">
+    <h1 class="text-2xl font-bold">Justificaciones</h1>
+    <div class="mt-2">
+        <h2 class="text-lg font-semibold">Justificaciones de hoy</h2>
+        <div class="flex flex-col gap-2">
+            {% for justification in today_justs %}
+            <button id="justification-card" class="toggle-button lg:w-[50%]  bg-blue-500 rounded-lg px-3 py-2 text-white ">
+                <div class="flex justify-between font-semibold ">
+                    <div class="flex gap-4">
+                        <p class="font-bold">{{ justification.student.first_name|title }} {{ justification.student.last_name|title }}</p>
+                        <p class="">{{ justification.general_assistance.date|date:"d/m/Y"  }}</p>
+                        <p class="">{{ justification.state }}</p>
+                    </div>
+                    <div class="">
+                        <i class="material-symbols-sharp">expand_more</i>
+                    </div>
+                </div>
+                <div class="hidden transition-all transform ease-in duration-300 ">
+                    {{ justification.justification }}
+                </div>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mt-2">
+        <h2 class="text-lg font-semibold">Justificaciones pendientes</h2>
+        <div class="flex flex-col gap-2">
+            {% for justification in pend_justs %}
+            <button id="justification-card" class="toggle-button lg:w-[50%]  bg-blue-500 rounded-lg px-3 py-2 text-white ">
+                <div class="flex justify-between font-semibold ">
+                    <div class="flex gap-4">
+                        <p class="font-bold">{{ justification.student.first_name|title }} {{ justification.student.last_name|title }}</p>
+                        <p class="">{{ justification.general_assistance.date|date:"d/m/Y"  }}</p>
+                        <p class="">{{ justification.state }}</p>
+                    </div>
+                    <div class="">
+                        <i class="material-symbols-sharp">expand_more</i>
+                    </div>
+                </div>
+                <div class="hidden transition-all transform ease-in duration-300 ">
+                    {{ justification.justification }}
+                </div>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mt-2">
+        <h2 class="text-lg font-semibold">Justificaciones realizadas</h2>
+        <div class="flex flex-col gap-2">
+            {% for justification in prev_justs %}
+            <button id="justification-card" class="toggle-button lg:w-[50%]  bg-blue-500 rounded-lg px-3 py-2 text-white ">
+                <div class="flex justify-between font-semibold ">
+                    <div class="flex gap-4">
+                        <p class="font-bold">{{ justification.student.first_name|title }} {{ justification.student.last_name|title }}</p>
+                        <p class="">{{ justification.general_assistance.date|date:"d/m/Y"  }}</p>
+                        <p class="">{{ justification.state }}</p>
+                    </div>
+                    <div class="">
+                        <i class="material-symbols-sharp">expand_more</i>
+                    </div>
+                </div>
+                <div class="hidden transition-all transform ease-in duration-300 ">
+                    {{ justification.justification }}
+                </div>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+{% block js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    var toggleButtons = document.querySelectorAll(".toggle-button");
+
+    toggleButtons.forEach(function(button) {
+        button.addEventListener("click", function(){
+            // Obtener el div asociado a este botón
+            let secondDiv = button.children[1];
+            secondDiv.classList.toggle("hidden")
+        });
+    });
+});
+</script>
+{% endblock js %}

@@ -1,0 +1,418 @@
+{% extends "director/Layout.html" %}
+{% block content %}
+    {% load in_month %}
+    <div id="container" class="w-[100%] lg:p-12 p-3">
+        <div class="flex flex-wrap gap-6 py-6">
+            <div id="levels_select" class="flex flex-col gap-4 w-[10rem]" {% if only_level %}
+                 style="display: none;" {% endif %} onchange="if (this.selectedIndex) updateFilteredData();">
+                <label for="level">Selecciona el <strong>Nivel:</strong></label>
+                <select id="level" class="p-2 border-2 rounded-md" name="level"
+                        onchange="if (this.selectedIndex) updateFilteredData();">
+                    <option class="p-2" value="all">--Todos--</option>
+                    {% for lev in levels %}
+                        <option class="p-2" value="{{ lev.name }}">{{ lev.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex flex-col gap-4 w-[10rem]">
+                <label for="cars">Selecciona el <strong>Grado:</strong></label>
+                <select id="grade" class="p-2 border-2 rounded-md" {% if not one_level %}disabled{% endif %}
+                        onchange="if (this.selectedIndex) updateFilteredData();">
+                    <option value="all">--Todos--</option>
+                    {% if one_level %}
+                        {% for grad in ed_level.grades.all %}
+                            <option value="{{ grad.name }}">{{ grad.name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div id="sections_select" class="flex flex-col gap-4 w-[10rem]" {% if only_section %}
+                 style="display: none;"  {% endif %}>
+                <label for="cars">Selecciona la <strong>Sección:</strong></label>
+                <select id="section" class="p-2 border-2 rounded-md" {% if not one_grade %}disabled{% endif %}
+                        onchange="if (this.selectedIndex) updateFilteredData();">
+                    <option value="all">--Todas--</option>
+                    {% if one_grade %}
+                        {% for sect in grade.sections.all %}
+                            <option value="{{ sect.name }}">{{ sect.name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div class="flex flex-col gap-4 w-[10rem]">
+                <label for="cars">Selecciona el <strong>Dia:</strong></label>
+                <input type="date" class="p-2 border-2 rounded-md" name="date" id="date"
+                       onchange="if (this.selectedIndex) updateFilteredData();">
+            </div>
+            <div class="flex flex-col gap-4 w-[10rem]">
+                <label for="cars">Filtra el <strong>Tipo:</strong></label>
+                <select class="p-2 border-2 rounded-md" name="state" id="state">
+                    <option value="all">Todos</option>
+                    <option value="Presente">Temprano</option>
+                    <option value="Tardanza">Tardanza</option>
+                    <option value="Falta">Falta</option>
+                    <option value="Falta Justificada">Falta Justificada</option>
+                    <option value="Tardanza Justificada Registrada">Tardanza Justificada Registrada</option>
+                    <option value="Tardanza Justificada Pedida">Tardanza Justificada Pedida</option>
+                    <option value="Salio">Salida Registrada</option>
+                    <option value="Aun no salio">Salida No Registrada</option>
+
+
+                </select>
+            </div>
+
+        </div>
+
+        <div>
+            <h2><strong>Registro de Asistencia General de Entrada y Salida - <i
+                    style="color: red">({{ select_state }}: <label
+                    id="detail-count">{{ details_count }}</label>)</i></strong></h2>
+            <div class="m-4  overflow-y-auto">
+                <table class="border border-solid border-spacing-2 rounded-md text-center">
+                    <tr class="border-2 px-2">
+                        <th class="px-2">Nro</th>
+                        <th class="px-2 sticky left-0 bg-white">Nombre</th>
+                        <th class="px-2">Clase</th>
+                        <th class="px-2">{{ date }}</th>
+                        <th class="px-2">Justificado</th>
+                        <th class="px-2">Justificación</th>
+                        <th class="px-2">Salida</th>
+                    </tr>
+                    {% for detail in details %}
+                        <tr class="border-2 px-2 text-center {% if forloop.counter|divisibleby:2 %} bg-gray-100 {% endif %}">
+                            <td class="px-3 border">{{ details.start_index|add:forloop.counter0 }}</td>
+                            <td class="px-3 border sticky left-0 bg-white text-sm">{{ detail.student.first_name.split.0 }} {{ detail.student.last_name }}</td>
+                            <td class="px-3 border">
+                                {{ detail.student.grade.short_name }}{{ detail.student.section.name }}</td>
+                            {% if detail.state == "Presente" %}
+                                <td class="px-3 border text-green-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">{{ detail.time }}</p>
+                                        <i class="material-symbols-sharp">done</i>
+                                    </div>
+                                </td>
+                                <td class="px-3 border">-</td>
+                                <td class="px-3 border">-</td>
+                            {% elif detail.state == "Tardanza" %}
+                                <td class="px-3 border text-orange-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">{{ detail.time }}</p>
+                                        <i class="material-symbols-sharp">warning</i>
+                                    </div>
+                                </td>
+                                <td class="px-3 border">No</td>
+                                <td class="px-3 border">-</td>
+                            {% elif detail.state == "Falta" %}
+                                <td class="px-3 border text-red-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">Falta</p>
+                                        <i class="material-symbols-sharp">error</i>
+                                    </div>
+                                </td>
+                                <td class="px-3 border">No</td>
+                                <td class="px-3 border">-</td>
+                            {% elif detail.state == "Tardanza Justificada Pedida" %}
+                                <td class="px-3 border text-yellow-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">Tardanza justificada (sin registrar)</p>
+                                        <i class="material-symbols-sharp">warning</i>
+                                    </div>
+                                </td>
+                                <td class="px-3 border">Si</td>
+                                <td class="px-3 border">{{ detail.justification }}</td>
+                            {% elif detail.state == "Tardanza Justificada Registrada" %}
+                                <td class="px-3 border text-green-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">{{ detail.time }}</p>
+                                        <i class="material-symbols-sharp">done</i>
+                                    </div>
+                                </td>
+                                <td class="px-3 border">Si</td>
+                                <td class="px-3 border">{{ detail.justification }}</td>
+                            {% elif detail.state == "Falta Justificada" %}
+                                <td class="px-3 border text-green-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">Falta</p>
+                                        <i class="material-symbols-sharp">done</i>
+                                    </div>
+                                </td>
+                                <td class="px-3 border">Si</td>
+                                <td class="px-3 border">{{ detail.justification }}</td>
+                            {% else %}
+                                <td class="px-3 border text-green-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">-</p>
+                                    </div>
+                                </td>
+                                <td class="px-3 border">-</td>
+                                <td class="px-3 border">-</td>
+                            {% endif %}
+                            {% if detail.exit_state == "Salio" %}
+                                <td class="px-3 border text-green-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">{{ detail.exit_time }}</p>
+                                        <i class="material-symbols-sharp">done</i>
+                                    </div>
+                                </td>
+                            {% elif detail.exit_state == "Aun no salio" %}
+                                <td class="px-3 border text-red-500">
+                                    <div class="flex gap-2 items-center justify-center">
+                                        <p class="">Sin registrar</p>
+                                        <i class="material-symbols-sharp">warning</i>
+                                    </div>
+                                </td>
+                            {% else %}
+                                <td class="px-3 border">-</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="pagination">
+            <p class="text-md my-4 text-blue-500 font-bold ms-2">Pagina {{ details.number }}
+                de {{ details.paginator.num_pages }}.</p>
+            <div class="step-links flex items-center gap-1">
+                {% if details.has_previous %}
+                    <a href="#" onclick="addParameterToURL('page', '{{ details.previous_page_number }}'); return false;"
+                       class="flex items-center p-2 text-md text-blue-500 font-bold">
+                        <i class="material-symbols-sharp">arrow_back_ios</i>
+                    </a>
+                    <a href="#" onclick="addParameterToURL('page', '1'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">1</a>
+                {% endif %}
+                {% if details.number > 3 %}
+                    <span class="text-lg text-blue-500 mx-2">...</span>
+                {% endif %}
+                {% if details.number > 2 %}
+                    <a href="#" onclick="addParameterToURL('page', '{{ details.previous_page_number }}'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">
+                        {{ details.number|add:"-1" }}
+                    </a>
+                {% endif %}
+                <span class="w-[2.6rem] h-[2rem] text-center current bg-blue-500 text-white font-bold text-md rounded-md">
+                {{ details.number }}
+            </span>
+                {% if details.number|add:"1" < details.paginator.num_pages %}
+                    <a href="#" onclick="addParameterToURL('page', '{{ details.next_page_number }}'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">
+                        {{ details.number|add:"1" }}
+                    </a>
+                {% endif %}
+                {% if details.number|add:"2" < details.paginator.num_pages %}
+                    <span class="text-lg text-blue-500 mx-2">...</span>
+                {% endif %}
+                {% if details.has_next %}
+                    <a href="#" onclick="addParameterToURL('page', '{{ details.paginator.num_pages }}'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">{{ details.paginator.num_pages }}</a>
+                    <a href="#" onclick="addParameterToURL('page', '{{ details.next_page_number }}'); return false;"
+                       class="flex items-center p-2 text-md text-blue-500 font-bold">
+                        <i class="material-symbols-sharp">arrow_forward_ios</i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <canvas id="myChart" class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto"></canvas>
+
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+    <script type="application/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+
+        let level = urlParams.get('level');
+
+        if (document.getElementById("levels_select").style.display == "none") {
+            level = "{{ ed_level.name }}";
+        }
+        const grade = urlParams.get('grade');
+        let section = urlParams.get('section');
+        if (document.getElementById("sections_select").style.display == "none") {
+            section = "{{ section.name }}";
+        }
+        const date = urlParams.get('date');
+        var d = new Date();
+
+        const state = urlParams.get('state')
+
+        if (level) {
+            document.getElementById('level').value = level;
+        } else {
+            document.getElementById('level').value = "all";
+        }
+        if (grade && level) {
+            document.getElementById('grade').value = grade;
+        } else {
+            document.getElementById('grade').value = "all";
+        }
+        if (section && grade && level) {
+            document.getElementById('section').value = section;
+        } else {
+            document.getElementById('section').value = "all";
+        }
+        if (date) {
+            document.getElementById('date').value = date;
+        } else {
+            document.getElementById('date').valueAsDate = d;
+        }
+
+        if (state) {
+            document.getElementById('state').value = state;
+        } else {
+            document.getElementById('state').valueAsDate = "all";
+        }
+
+
+        function updateFilteredData() {
+            var select_level = document.getElementById('level').value;
+
+            // Si solo existe un nivel en el colegio
+            if (document.getElementById("levels_select").style.display == "none") {
+                select_level = "{{ed_level.name}}";
+            }
+
+            var select_grade = document.getElementById('grade').value;
+            var select_section = document.getElementById('section').value;
+
+            if (document.getElementById("sections_select").style.display == "none") {
+                select_section = "{{section.name}}";
+            }
+            var select_date = document.getElementById('date').value
+            var select_state = document.getElementById('state').value
+
+            var url = '{% url "assistance_app:daily_assistance_report" slug=school.slug %}?'
+            if (select_level != "all") {
+                url += "level=" + select_level + '&';
+            }
+            if (select_level == level && select_grade != "all" && select_level != "all") {
+                url += "grade=" + select_grade + '&';
+            }
+            if (select_level == level && select_grade == grade && select_level != "all" && select_grade != "all" && select_section != "all") {
+                url += "section=" + select_section + '&';
+            }
+            if (select_date != d) {
+                url += "date=" + select_date + '&'
+            }
+            if (select_state != "all") {
+                url += "state=" + select_state + '&';
+            }
+
+            window.location.href = url;
+        }
+
+        // Event listeners for select inputs
+        document.getElementById('level').addEventListener('change', updateFilteredData);
+        document.getElementById('grade').addEventListener('change', updateFilteredData);
+        document.getElementById('section').addEventListener('change', updateFilteredData);
+        document.getElementById('date').addEventListener('change', updateFilteredData);
+        document.getElementById('state').addEventListener('change', updateFilteredData);
+
+
+        function addParameterToURL(paramName, paramValue) {
+
+            var currentURL = window.location.href;
+
+            // Check if the parameter already exists in the URL
+            if (currentURL.indexOf(paramName + '=') !== -1) {
+                // Update the existing parameter value
+                var regex = new RegExp('(' + paramName + '=.*?)(&|$)');
+                var newURL = currentURL.replace(regex, paramName + '=' + encodeURIComponent(paramValue) + '$2');
+            } else {
+                // Check if there are already parameters in the URL
+                var separator = currentURL.indexOf('?') !== -1 ? '&' : '?';
+
+                // Add the new parameter to the URL
+                var newURL = currentURL + separator + encodeURIComponent(paramName) + '=' + encodeURIComponent(paramValue);
+            }
+            // Redirect to the new URL
+            window.location.href = newURL;
+        }
+
+        const ctx = document.getElementById('myChart');
+
+        let attendanceData = JSON.parse('{{ attendance_data|escapejs }}');
+
+        let data = Object.values(attendanceData);
+        let labels = Object.keys(attendanceData);
+
+        labels = labels.map(label => label === 'Presente' ? 'Temprano' : label);
+
+        let total = data.reduce((acc, cur) => acc + cur, 0);
+        let percentages = data.map(value => ((value / total) * 100).toFixed(2) + '%');
+
+        let colors = [
+            'rgba(0, 255, 0, 0.8)',
+            'rgba(255, 151, 0, 0.8)',
+            'rgba(255, 0, 0, 0.8)'
+        ];
+
+        let myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, data.length),
+                    hoverOffset: 4
+                }],
+                labels: labels.map((label, index) => label + ' (' + percentages[index] + ')')
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Reporte Día: ' + '{{ date }}',
+                    }
+                }
+            }
+        });
+
+        // Función para actualizar el gráfico
+        function updateChart(newData) {
+            let newValues = Object.values(newData);
+            let newTotal = newValues.reduce((acc, cur) => acc + cur, 0);
+            let newPercentages = newValues.map(value => ((value / newTotal) * 100).toFixed(2) + '%');
+
+            // Actualizar los datos del gráfico
+            myChart.data.datasets[0].data = newValues;
+            myChart.data.labels = Object.keys(newData).map((label, index) => {
+                return (label === 'Presente' ? 'Temprano' : label) + ' (' + newPercentages[index] + ')';
+            });
+
+            myChart.update();
+        }
+
+        $(function () {
+            const slug = "{{ school.slug }}";
+            const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            let url = protocol + window.location.host + ":8001/" + 'ws/dashboard/' + slug + '/'; // PRODUCTION
+            {#const url = protocol + window.location.host + '/ws/dashboard/' + slug + '/'#}
+            console.log("URL:", url);
+            const socket = new WebSocket(url);
+
+            socket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                console.log('Asistencia actualizada:', data);
+
+                let assistanceDay = data.assistance.Presente + data.assistance.Tardanza
+                let detailCount = document.getElementById('detail-count').textContent = assistanceDay;
+
+                updateChart(data.assistance);
+            };
+
+            socket.onclose = function (e) {
+                console.error('WebSocket cerrado inesperadamente');
+            };
+        });
+    </script>
+
+{% endblock js %}

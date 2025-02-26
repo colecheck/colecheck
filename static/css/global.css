@@ -1,0 +1,28 @@
+input[type="number"]::-webkit-inner-spin-button,
+.number-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0; /* Puede que necesites añadir margen si lo ajustas */
+}
+
+#wrapper {
+    width: calc(100vw - 18rem);
+    max-width: calc(100vw - 18rem);
+}
+
+#container {
+    margin-top : 4.5rem;
+}
+
+#topbar {
+    width: calc(100vw - 18rem);
+}
+
+@media screen and (max-width: 1024px) {
+    #topbar {
+        width: 100vw;
+    }
+    #wrapper {
+        width: 100vw;
+        max-width: 100vw;
+    }
+  }

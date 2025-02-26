@@ -1,0 +1,523 @@
+{% extends "teacher/TeacherLayout.html" %}
+
+{% block content %}
+
+    <div id="container" class="lg:p-10 p-3">
+        <form id="manual-form" method="post"
+              action="{% url 'assistance_app:store_manual_assistances' slug=school.slug %}">
+            {% csrf_token %}
+            <div class="">
+                <div class="flex justify-center">
+                    <h2 class="text-xl"><strong>
+                        {{ course.grade.short_name }}{% if course.section %}{{ course.section.short_name }}{% endif %}
+                        - {{ course.name }}</strong></h2>
+                </div>
+                <div class="lg:grid lg:grid-cols-2 flex flex-col mt-2">
+                    <div id="manual_assistance" class="flex-1">
+                        <div id="title" class="flex justify-between gap-2 items-center">
+                            <h1 class="font-semibold text-lg">Asistencia Manual</h1>
+                            <h1 id="conf-message"></h1>
+                            <button type="button" id="activateCamera"
+                                    class="py-2 px-4 rounded-md bg-green-500 text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
+                                Cambiar a QR
+                            </button>
+                        </div>
+                        <div id="" class="overflow-y-auto mt-2 overflow-x-auto">
+                            <table class="w-full border border-solid border-spacing-2 rounded-md ">
+                                <tr class="border-2 px-2">
+                                    <th class="px-2">Nro</th>
+                                    <th class="px-2 sticky left-0 bg-white">Nombre</th>
+                                    <!--<th class="px-2">Clase</th>-->
+                                    <th class="px-2">Presente</th>
+                                    <th class="px-2">Falta</th>
+                                    <th class="px-2">Tardanza</th>
+                                    <th class="px-2">Permiso</th>
+                                </tr>
+                                <input type="hidden" id="assistance_id" name="assistance_id"
+                                       value="{{ assistance.id }}">
+                                {% for detail in assistance.assistance_details.all %}
+                                    <tr {% if forloop.counter|divisibleby:2 %} class="bg-gray-100" {% endif %}>
+                                        <td class="px-3 border">{{ forloop.counter }}</td>
+                                        <td class="px-1 border text-sm bg-white sticky left-0 whitespace-pre">{{ detail.student.first_name.split.0 }} {{ detail.student.last_name.split.0 }}</td>
+                                        <!--<td class="px-3 border">{{ detail.student.grade.short_name }}{{ detail.student.section.name}}</td>-->
+                                        <td class="px-3 border">
+                                            <div class="p-1 flex items-center justify-center">
+                                                <input type="radio" id="{{ detail.student.dni }}presente"
+                                                       name="{{ detail.student.dni }}" value="Presente"
+                                                       class="lg:w-6 w-5 h-8 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                                       {% if detail.state == "Presente" %}checked{% endif %}>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 border">
+                                            <div class="p-1 flex items-center justify-center">
+                                                <input type="radio" id="{{ detail.student.dni }}falta"
+                                                       name="{{ detail.student.dni }}" value="Falta"
+                                                       class="lg:w-6 w-5 h-8 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                                       {% if detail.state == "Falta" %}checked{% endif %}>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 border">
+                                            <div class="p-1 flex items-center justify-center">
+                                                <input type="radio" id="{{ detail.student.dni }}tardanza"
+                                                       name="{{ detail.student.dni }}" value="Tardanza"
+                                                       class="lg:w-6 w-5 h-8 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                                       {% if detail.state == "Tardanza" %}checked{% endif %}>
+                                            </div>
+                                        </td>
+                                        <td class="px-3 border">
+                                            <div class="p-1 flex items-center justify-center">
+                                                <input type="radio" id="{{ detail.student.dni }}permiso"
+                                                       name="{{ detail.student.dni }}" value="Permiso"
+                                                       class="lg:w-6 w-5 h-8 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
+                                                       {% if detail.state == "Permiso" %}checked{% endif %}>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                        <button id="save-manual-assistance" type="submit"
+                                class="mt-2 py-2 px-5 rounded-md bg-red-500 text-white w-full sm:w-auto">
+                            Finalizar Asistencia
+                        </button>
+                    </div>
+                    <div id="qr_assistance" class="flex-1">
+                        <div id="title" class="flex justify-between items-center">
+                            <h2 class="font-semibold text-lg">Asistencia por QR</h2>
+                            <div class="flex gap-2">
+                                <button id="save-manual-assistance1" type="submit"
+                                        class="py-2 px-4 rounded-md bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-700">
+                                    Finalizar
+                                </button>
+                                <button id="open_table" type="button"
+                                        class="p-2 rounded-md bg-green-500 text-white lg:block hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-700"
+                                        onclick="start_manual_assistance()">Regresar
+                                </button>
+                            </div>
+                        </div>
+                        <div id="">
+                            <div class="text-center">
+                                <video id="video" class="lg:w-[22rem] lg:h-[16rem] w-full mt-2"></video>
+                                <canvas id="canvas" class="w-[19rem] h-[13rem]" style="display:none"></canvas>
+                                <div id="list-toast" class="hidden">
+                                    <div id="toast"
+                                         class="absolute top-2 right-2 lg:bottom-full lg:w-[10rem] lg:h-[3rem] rounded bg-green-500 text-white p-2 flex items-center">
+                                        <i id="toast-icon" class="material-symbols-sharp">done</i>
+                                        <p id="toast-text" class="text-xs">Estudiante encontrado</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="relative lg:h-[18rem] w-[1rem] z-20">
+                                <div id="student-card"
+                                     class="fixed bottom-0 right-0 left-0 translate-y-full lg:absolute lg:-translate-x-1/2 transition ease-in-out z-20  border rounded-lg shadow-md py-4 px-8  bg-white">
+                                    <p class="text-center font-bold text-lg">Datos del Estudiante</p>
+                                    <div class="grid grid-cols-2 mt-4">
+                                        <div class="flex flex-col gap-1">
+                                            <div>
+                                                <p><strong>Nombre:</strong></p>
+                                                <p id="name_id">Elisban Daymert</p>
+                                            </div>
+                                            <div>
+                                                <p><strong>Apellido:</strong></p>
+                                                <p id="lastname_id">Laime Niera</p>
+                                            </div>
+                                            <p><strong>DNI:</strong><span id="dni_id">60438344</span></p>
+                                            <p><strong>Grado:</strong><span id="grade_id">5to A</span></p>
+                                        </div>
+                                        <div class="text-center">
+                                            <img class="w-[8rem]"
+                                                 src="https://static.vecteezy.com/system/resources/previews/024/724/633/non_2x/a-happy-smiling-young-college-student-with-a-book-in-hand-isolated-on-a-transparent-background-generative-ai-free-png.png"
+                                                 alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+
+{% block js %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="application/javascript">
+
+        function beforeUnloadHandler(e) {
+            var confirmationMessage = 'Seguro? No se guardaran los cambios';
+            (e || window.event).returnValue = confirmationMessage;
+            return confirmationMessage;
+        }
+
+        window.addEventListener('beforeunload', beforeUnloadHandler);
+
+        function handleSubmit(e) {
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+        }
+
+        document.getElementById('manual-form').addEventListener('submit', handleSubmit);
+
+        document.getElementById('qr_assistance').style.display = "none"
+
+        const video = document.getElementById('video');
+        const buttonActivateCamera = document.getElementById('activateCamera');
+        let correct_sound = new Audio("/static/sounds/barcode.mp3")
+        let error_sound = new Audio("/static/sounds/error-beep.mp3")
+        let date_time = new Date();
+        let students_dni = {}
+        let lastQRDNI = -1;
+
+        const constraints = {
+            audio: false,
+            video: {
+                advanced: [{facingMode: "environment"}]
+            }
+        };
+
+
+        buttonActivateCamera.addEventListener("click", function () {
+            document.getElementById('manual_assistance').style.display = "none"
+            document.getElementById('open_table').style.display = "block"
+            document.getElementById('qr_assistance').style.display = "block"
+            document.getElementById('activateCamera').style.display = "none"
+
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    // Aquí puedes utilizar el stream para inicializar jsQR
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch((error) => {
+                    console.error('Error accessing camera: ', error);
+
+                });
+
+            requestAnimationFrame(captureFrame);
+        });
+
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+        let verify_dni = 'a'
+
+        let currentToastId = 0;
+        let toastShowing = false;
+
+        function showHideToast() {
+            currentToastId += 1;
+            let toastToHide = currentToastId;
+
+            if (!toastShowing) {
+                document.getElementById('list-toast').classList.toggle('hidden')
+                toastShowing = true;
+            }
+
+            setTimeout(() => {
+                if (toastToHide == currentToastId) {
+                    document.getElementById('list-toast').classList.toggle('hidden')
+                    toastShowing = false;
+                }
+            }, 1500)
+        }
+
+        function setToastToCorrect() {
+            document.getElementById('toast').classList.remove('bg-red-500');
+            document.getElementById('toast').classList.add('bg-green-500');
+            document.getElementById('toast-text').innerText = 'Estudiante encontrado';
+            document.getElementById('toast-icon').innerText = 'done';
+        }
+
+        function setToastToRepeated() {
+            document.getElementById('toast').classList.remove('bg-green-500');
+            document.getElementById('toast').classList.add('bg-red-500');
+            document.getElementById('toast-text').innerText = 'Alumno ya registrado';
+            document.getElementById('toast-icon').innerText = 'warning';
+        }
+
+        function captureFrame() {
+            // Captura la imagen del video en el lienzo
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Obtener la información de píxeles de la imagen del lienzo
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Decodifica el código QR usando la biblioteca jsQR
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: 'dontInvert',
+            });
+
+            // Si se detectó un código QR, muestra su contenido
+            if (code) {
+                let encripted_data = code.data.toString();
+                let data = decrypt(encripted_data)
+                let list_data = data.split('$');
+
+                let _dni = list_data[2];
+
+                if (_dni && _dni !== lastQRDNI) {
+                    // console.log("Abrir Toast")
+                    lastQRDNI = _dni
+                    let thisDNI = _dni
+                    setTimeout(() => {
+                        if (lastQRDNI == thisDNI) {
+                            lastQRDNI = -1;
+                        }
+                    }, 5000)
+                    let first_name = list_data[0];
+                    let last_name = list_data[1];
+                    let grade = list_data[3];
+                    let section = list_data[4];
+
+                    if (students_dni.hasOwnProperty(_dni)) {
+                        //Qr repetido
+                        //setToastToRepeated();
+                        //showHideToast();
+                        error_sound.play();
+                        toastr["warning"]("Alumno escaneado", "Advertencia");
+                    } else if (_dni) {
+                        students_dni[_dni] = _dni
+                        document.getElementById('name_id').innerText = first_name
+                        document.getElementById('lastname_id').innerText = last_name
+                        document.getElementById('dni_id').innerText = " " + _dni
+                        document.getElementById('grade_id').innerText = " " + grade + section
+                        document.getElementById('student-card').classList.add('translate-y-full')
+                        setTimeout(() => {
+                            document.getElementById('student-card').classList.remove('translate-y-full')
+                        }, 300)
+                        data = {
+                            'first_name': first_name,
+                            'last_name': last_name,
+                            'dni': _dni,
+                            'grade': grade,
+                            'section': section,
+                        }
+                        sendAssistance(_dni);
+                        // console.log("datos de usuario:", data)
+
+                    } else {
+                        //Qr invalido
+                        // document.getElementById('toast').classList.remove('bg-green-500');
+                        // document.getElementById('toast').classList.add('bg-orange-500');
+                        // document.getElementById('toast-text').innerText = 'QR Inválido';
+                        // document.getElementById('toast-icon').innerText = 'error';
+                        // document.getElementById('list-toast').classList.toggle('hidden');
+                        // error_sound.play();
+                        // showHideToast();
+
+                        toastr["error"]("Código QR Incorrecto", "Error")
+                        error_sound.play();
+
+                        toastr.options = {
+                            "closeButton": false,
+                            "debug": false,
+                            "newestOnTop": false,
+                            "progressBar": true,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "onclick": null,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "1000",
+                            "extendedTimeOut": "3000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                    }
+                }
+            }
+            // Repetir el proceso para detectar códigos QR en cada fotograma
+            requestAnimationFrame(captureFrame);
+        }
+
+        // Iniciar el proceso de captura de cuadros
+        requestAnimationFrame(captureFrame);
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        function send_data(method, URL, data) {
+            console.log(method);
+            console.log(URL);
+            console.log(JSON.stringify(data));
+            $.ajax({
+                url: URL,
+                async: true,
+                dataType: 'json',
+                type: method,
+                data: {'data': JSON.stringify(data)},
+                //{#headers: {"X-CSRFToken": csrftoken},#}
+                success: function (response) {
+                    //Perform actions with the response data from the view
+                    correct_sound.play()
+
+                    toastr["success"]("Alumno registrado", "Éxito")
+
+                    let imageUrl = response.profileImageUrl;
+                    $("#profile_id").attr("src", imageUrl);
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                },
+                error: function (response) {
+                    toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                    error_sound.play();
+                }
+            });
+        }
+
+        function sendAssistance(dni) {
+
+            const url = '{% url "assistance_app:register_course_assistance" slug=school.slug %}';
+            const assistanceId = '{{ assistance.id }}';
+
+            const data = {dni: dni, assistance_id: assistanceId}
+
+            $.ajax({
+                url: url,
+                async: true,
+                dataType: 'json',
+                type: 'POST',
+                data: {'data': JSON.stringify(data)},
+                success: function (response) {
+                    correct_sound.play()
+
+                    toastr["success"]("Alumno registrado", "Éxito")
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                    document.getElementById(`${dni}presente`).checked = true;
+                },
+                error: function (response) {
+                    error_sound.play();
+
+                    toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                }
+            });
+
+            // fetch(url, {
+            //     method: "POST",
+            //     headers: {'Content-Type': 'application/json'},
+            //     body: JSON.stringify(data)
+            //     })
+            //     .then(res => {
+            //         console.log("Request complete! response:", res)
+            //         return res.json();
+            //     })
+            //     .then(res => {
+            //         if(res.success){
+            //             setToastToCorrect();
+            //             showHideToast();
+            //             correct_sound.play();
+            //         }
+            //         if(res.repeat){
+            //             setToastToRepeated();
+            //             showHideToast();
+            //             error_sound.play();
+            //         }
+            //     }).catch(err => {
+            //         console.log(err)
+            //     })
+        }
+
+
+        function start_manual_assistance() {
+            document.getElementById('open_table').style.display = 'none';
+            document.getElementById('qr_assistance').style.display = 'none';
+            document.getElementById('manual_assistance').style.display = 'block';
+            document.getElementById('activateCamera').style.display = "block";
+        }
+
+
+        const list_of_chars = ['á', 'Á', 'é', 'É', 'í', 'Í', 'ó', 'Ó', 'ú', 'Ú', 'ñ', 'Ñ'];
+
+        function decrypt(encryptedText, key = 3) {
+            let decryptedText = '';
+            for (let i = 0; i < encryptedText.length; i++) {
+                let char = encryptedText[i];
+                if (list_of_chars.includes(char)) {
+                    decryptedText += char;
+                } else if (char.match(/[a-z]/i)) {
+                    let start = char.match(/[a-z]/) ? 'a'.charCodeAt(0) : 'A'.charCodeAt(0);
+                    decryptedText += String.fromCharCode((char.charCodeAt(0) - start - key + 26) % 26 + start);
+                } else if (char.match(/[0-9]/)) {
+                    decryptedText += String.fromCharCode((char.charCodeAt(0) - '0'.charCodeAt(0) - key + 10) % 10 + '0'.charCodeAt(0));
+                } else {
+                    decryptedText += char;
+                }
+            }
+            return decryptedText;
+        }
+
+    </script>
+
+{% endblock js %}

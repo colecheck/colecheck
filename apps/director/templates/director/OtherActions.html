@@ -1,0 +1,81 @@
+{% extends "director/Layout.html" %}
+
+{% block content %}
+
+<div id="container" class="max-h-screen p-4 grid lg:grid-cols-2 grid-cols-1 justify-items-center ">
+    <div class="w-full">
+        <button type="button" onclick="normalizeCourseAssistances();"  class="bg-green-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75">Normalizar asistencias de curso</button>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block js %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script type="application/javascript">
+    
+    function normalizeCourseAssistances(student_dni){
+
+        const url = '{% url "assistance_app:normalize_course_assistances" slug=school.slug %}'
+        const data = {}
+
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            data: {'data': JSON.stringify(data)},
+            success: function (response) {
+                //Perform actions with the response data from the view
+
+                toastr["success"]("Asistencias normalizadas", "Éxito")
+
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+            },
+            error: function (response) {
+
+                toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+            }
+        });
+        
+    }   
+</script>
+
+{% endblock js %}

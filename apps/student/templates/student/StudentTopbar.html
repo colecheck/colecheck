@@ -1,0 +1,38 @@
+
+<div class="topbar w-full h-[4.5rem] p-2 bg-slate-100 flex lg:justify-end items-center">
+    <button class="menu-btn lg:hidden" id="buttonSidebar">
+        <i class="material-symbols-sharp">menu</i>
+    </button>
+    <div class="flex justify-end lg:gap-6 gap-2">
+        <div class="theme-toggler flex items-center h-[1.5rem] bg-white rounded-md">
+            <i class="material-symbols-sharp p-2 text-sm rounded-md active bg-blue-500 text-white ">light_mode</i>
+            <i class="material-symbols-sharp p-2 text-sm">dark_mode</i>
+        </div>
+        <div class="relative profile flex justify-end lg:gap-8 gap-2">
+            <div class="info">
+                <p><b>{{user.first_name}} {{user.last_name}}</b></p>
+                <small class="text-muted">Estudiante</small>
+            </div>
+            <button id="buttonDropdownTopbar">
+                <i class="material-symbols-sharp">arrow_drop_down</i>
+            </button>
+            <div id="dropdownTopbar" class="absolute top-full start-0 bg-white hidden">
+                <div id="user-links" class="w-auto">
+                    <!--
+                    <a href="" id="user-link" class="flex items-center p-2 hover:bg-slate-100">
+                        <i class="material-symbols-sharp">person</i>
+                        <span class="">Mi cuenta</span>
+                    </a>
+                    -->
+                    <a  href="{% url 'logout' %}" id="user-link" class="flex items-center p-2 hover:bg-slate-100">
+                        <i class="material-symbols-sharp">logout</i>
+                        <span class="">Cerrar Sesion</span>
+                    </a>
+                </div>
+            </div>
+            <div class="profile-photo rounded-full">
+                <img class=" w-[3rem] h-[3rem] rounded-full" src="https://static.vecteezy.com/system/resources/previews/024/724/633/non_2x/a-happy-smiling-young-college-student-with-a-book-in-hand-isolated-on-a-transparent-background-generative-ai-free-png.png" alt="#">
+            </div>
+        </div>
+    </div>
+</div>

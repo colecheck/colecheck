@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <a href="{% url 'school_app:home' %}" class="btn btn-danger mx-3 mt-3" type="button">Ir al Inicio</a>
+    <h2>Generar QR's</h2>
+    <div class="card text-white bg-info mx-3 mb-3">
+        <button class="card-header" id="id_indications">Indicaciones</button>
+        <div class="card-body" id="id_body_indications" hidden>
+            <ul class="list-group text-dark">
+                <li class="list-group-item">Para generar el codigo QR de un único estudiante, solo
+                    seleccione el campo "Estudiante"
+                </li>
+                <li class="list-group-item">Si quiere generar de toda una Aula, solo seleccione el aula que desea"
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <hr>
+    <div class="row mb-2">
+        <div class="col-md-4">
+            <label>Estudiante (DNI):</label>
+        </div>
+        <div class="col-md-8 pr-2">
+            <select class="form-control" id="id_student" name="student">
+                <option disabled selected value=""> Seleccione</option>
+                {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.first_name }}
+                        - {{ student.dni }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-4">
+            <label>Aula:</label>
+        </div>
+        <div class="col-md-8">
+            <select class="form-control" id="id_classroom" name="classroom">
+                <option disabled selected value=""> Seleccione</option>
+                {% for classroom in classrooms %}
+                    <option value="{{ classroom.id }}">{{ classroom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <hr>
+    <button type="submit" class="form-control btn btn-success" id="id_generate_qr">Generar QR</button>
+
+{% endblock content %}
+
+{% block js %}
+    <script type="application/javascript">
+        $('#id_student').select2({});
+        $('#id_classroom').select2({});
+
+        function limper(request) {
+            $('#id_student option').removeAttr('selected');
+            $('#id_student option:first').attr('selected', 'selected');
+            $('#id_student').trigger('change');
+
+            $('#id_level option').removeAttr('selected');
+            $('#id_level option:first').attr('selected', 'selected');
+            $('#id_level').trigger('change');
+
+            $('#id_grade option').removeAttr('selected');
+            $('#id_grade option:first').attr('selected', 'selected');
+            $('#id_grade').trigger('change');
+
+            $('#id_section option').removeAttr('selected');
+            $('#id_section option:first').attr('selected', 'selected');
+            $('#id_section').trigger('change');
+
+            {#$('#id_producto option[value=0]').attr('selected','selected');#}
+            {#$('#id_unidad option[value=0]').attr('selected','selected');#}
+        };
+
+        document.getElementById("id_indications")
+            .addEventListener("click", function (event) {
+                let body_indications = document.getElementById("id_body_indications");
+
+                if (body_indications.hidden === true) {
+                    body_indications.hidden = false;
+                } else {
+                    body_indications.hidden = true
+                }
+                event.preventDefault();
+            });
+
+        document.getElementById("id_generate_qr")
+            .addEventListener("click", function (event) {
+
+                let id_student = document.getElementById("id_student").value;
+                let id_classroom = document.getElementById("id_classroom").value;
+
+                if (!id_student) {
+                    id_student = 0;
+                }
+
+                if (!id_classroom) {
+                    id_classroom = 0;
+                }
+
+                if (!id_classroom && !id_student) {
+                    toastr["error"]("Seleccione almenos una opcion", "ERROR");
+                    return;
+                }
+
+
+                limper()
+                try {
+                    let url = "/student/print_qr_pdf/" + id_student + "/" + id_classroom + "/";
+                    window.location.href = url;
+
+                    toastr["success"]("PDF Generado...!!", "Éxito")
+
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                } catch (err) {
+                    toastr["error"]("No se pudo generar el PDF", "ERROR")
+                }
+
+
+                /*
+                $.ajax({
+                    url: '/student/generate_pdf_qr/',
+                    async: true,
+                    dataType: 'json',
+                    type: 'GET',
+                    data: {'data': JSON.stringify(data)},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {#headers: {"X-CSRFToken": csrftoken},#}
+                    success: function (response) {
+                        //Perform actions with the response data from the view
+
+                        toastr["success"](response.content, response.title)
+
+                        toastr.options = {
+                            "closeButton": false,
+                            "debug": false,
+                            "newestOnTop": false,
+                            "progressBar": true,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "onclick": null,
+                            "showDuration": "300",
+                            "hideDuration": "1000",
+                            "timeOut": "1000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+
+                        limper()
+
+                        let url = "/student/print_qr_pdf/"
+                        window.location.href = url;
+
+                    },
+                    error: function (response) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {#toastr["warning"](response.responseJSON.content, response.responseJSON.title)#}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {#error_sound.play();#}
+                    }
+                });
+                */
+            });
+
+
+    </script>
+{% endblock js %}

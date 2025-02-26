@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colecheck - Plataforma Educativa - Profesor</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!--<script src="https://cdn.tailwindcss.com"></script>-->
+    <script src="{% static 'js/global.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}" >
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static 'vendors/toastr/toastr.min.css' %}">
+    <link rel="icon" href="{% static 'img/favicons/favicon.ico' %}"/>
+
+</head>
+<body class="w-full h-[100%] m-0 p-0">
+    <div class="admin flex h-[100%] w-[100vw] w-max-[100vw]">
+        {% include "teacher/TeacherSidebar.html" %}
+        <div id="wrapper" class="lg:ml-[18rem]">
+            {% include "teacher/TeacherTopbar.html" %}
+            {% block content %} {% endblock %}
+        </div>
+    </div>
+    <script>
+        /*-------------Código Sidebar-------------*/
+        const $buttonSidebar = document.getElementById("buttonSidebar");
+        const $buttonCloseSidebar = document.getElementById("buttonCloseSidebar");
+        const $sidebar = document.getElementById("sidebar");
+        //let isOpen = 0; // Variable para saber si la sidebar está abierta o cerrado en pantalla pequeña
+        $buttonSidebar.addEventListener("click", function(){
+            const $sidebar = document.getElementById("sidebar");
+            if($sidebar){
+                $sidebar.classList.remove("hidden")
+                $sidebar.classList.add("flex")
+                console.log("isOpen")
+            }
+        })
+        $buttonCloseSidebar.addEventListener("click", function(){
+            const $sidebar = document.getElementById("sidebar");
+            if($sidebar){
+                $sidebar.classList.remove("flex")
+                $sidebar.classList.add("hidden")
+            }
+        })
+        document.addEventListener("click", function(event){
+            if(window.innerWidth < 1024 && $sidebar.classList.contains("flex")){
+                let isClickInside = $sidebar.contains(event.target) || $buttonSidebar.contains(event.target)
+                if(!isClickInside){
+                    $sidebar.classList.remove("flex")
+                    $sidebar.classList.add("hidden")
+                }
+            }
+        })
+        /*-------------Código Topbar-------------*/
+        const $buttonDropdownTopbar = document.getElementById("buttonDropdownTopbar");
+        $buttonDropdownTopbar.addEventListener("click", function(){
+            const $dropdownTopbar = document.getElementById("dropdownTopbar");
+            if($dropdownTopbar){
+                $dropdownTopbar.classList.toggle("hidden")
+            }
+        })
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
+    <script src="{% static 'vendors/toastr/toastr.min.js' %}"></script>
+    <!-- jQuery -->
+    <script src="{% static 'vendors/jquery/jquery.min.js' %}"></script>
+    {% block js %}
+    {% endblock js %}
+</body>
+</html>

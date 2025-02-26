@@ -1,0 +1,184 @@
+{% extends "director/Layout.html" %}
+{% block content %}
+
+<div id="container" class="lg:p-8 p-3">
+    <div class="flex flex-wrap gap-6 pb-6">
+        <div id="levels_select" class="flex flex-col gap-4 w-[9rem]" {% if only_level %} style="display: none;"  {% endif %}>
+            <label for="level">Selecciona el <strong>Nivel:</strong></label>
+            <select id="level" class="p-2 border-2 rounded-md" name="level" onchange="if (this.selectedIndex) updateFilteredData();">
+                <option class="p-2" value="all">--Todos--</option>
+                {% for lev in levels %}
+                <option class="p-2" value="{{ lev.name }}">{{ lev.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+            <div class="flex flex-col gap-4 w-[10rem]">
+            <label for="cars">Selecciona el <strong>Grado:</strong></label>
+            <select id="grade" class="p-2 border-2 rounded-md"  {% if not one_level %}disabled{% endif %} onchange="if (this.selectedIndex) updateFilteredData();">
+                <option value="all">--Todos--</option>
+                {% if one_level %}
+                {% for grad in ed_level.grades.all %}
+                    <option value="{{ grad.name }}">{{ grad.name }}</option>
+                {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        <div id="sections_select" class="flex flex-col gap-4 w-[10rem]" {% if only_section %} style="display: none;"  {% endif %}>
+            <label for="cars">Selecciona la <strong>Sección:</strong></label>
+            <select id="section" class="p-2 border-2 rounded-md"  {% if not one_grade %}disabled{% endif %} onchange="if (this.selectedIndex) updateFilteredData();">
+                <option value="all">--Todas--</option>
+                {% if one_grade %}
+                {% for sect in grade.sections.all %}
+                    <option value="{{ sect.name }}">{{ sect.name }}</option>
+                {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+
+        {% if one_section %}
+        <div>
+            <button type="button" id="send_whatsapp" onclick="sendWhatsappMessages('{{ section.id }}');" class="bg-green-500 disabled:opacity-75 text-white font-bold py-2 px-4 rounded">Enviar</button>
+        </div>
+        {% endif %}
+    </div>
+    <div>
+    </div>
+    
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="application/javascript">
+
+
+    function sendWhatsappMessages(section_id) {
+        const url = "{% url 'assistance_app:send_whatsapp_messages' slug=school.slug %}"
+
+        const data = {
+            section: section_id
+        };
+
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            data: {'data': JSON.stringify(data)},
+            success: function (response) {
+                toastr["success"]("Mensajes enviados", "Éxito")
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+            },
+            error: function (response) {
+                toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+            }
+        });
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let level = urlParams.get('level');
+
+    if (document.getElementById("levels_select").style.display == "none") {
+        level = "{{ ed_level.name }}";
+    }
+    const grade = urlParams.get('grade');
+    let section = urlParams.get('section');
+    if (document.getElementById("sections_select").style.display == "none") {
+        section = "{{ section.name }}";
+    }
+
+
+    if (level) {
+        document.getElementById('level').value = level;
+    } else {
+        document.getElementById('level').value = "all";
+    }
+    if (grade && level) {
+        document.getElementById('grade').value = grade;
+    } else {
+        document.getElementById('grade').value = "all";
+    }
+    if (section && grade && level) {
+        document.getElementById('section').value = section;
+    } else {
+        document.getElementById('section').value = "all";
+    }
+
+    function updateFilteredData() {
+        var select_level = document.getElementById('level').value;
+
+        // Si solo existe un nivel en el colegio
+        if (document.getElementById("levels_select").style.display == "none") {
+            select_level = "{{ed_level.name}}";
+        }
+
+        var select_grade = document.getElementById('grade').value;
+        var select_section = document.getElementById('section').value;
+
+        if (document.getElementById("sections_select").style.display == "none") {
+            select_section = "{{section.name}}";
+        }
+
+
+        var url = '{% url "assistance_app:send_test_messages" slug=school.slug %}?'
+        if (select_level != "all") 
+        {
+            url += "level=" + select_level + '&';         
+        }
+        console.log(`${select_level} and ${level}`)
+
+        if (select_level == level && select_grade != "all" && select_level != "all") 
+        {
+            url += "grade=" + select_grade + '&';
+        }
+        if (select_level == level && select_grade == grade && select_level  != "all" && select_grade != "all" && select_section != "all") 
+        {
+            url += "section=" + select_section + '&';
+        }
+
+
+        window.location.href = url;
+    }
+
+    // Event listeners for select inputs
+    document.getElementById('level').addEventListener('change', updateFilteredData);
+    document.getElementById('grade').addEventListener('change', updateFilteredData);
+    document.getElementById('section').addEventListener('change', updateFilteredData);
+
+</script>
+
+{% endblock js %}

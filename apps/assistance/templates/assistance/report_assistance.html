@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block style %}
+{% endblock style %}
+
+{% block reports %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12 col-sm-12 text-center">
+                <div class="d-grid gap-2" style="background: #d3d3d3">
+                    {#    <a href="{% url 'school_app:home' %}" class="btn btn-danger mx-3 mt-3" type="button">Ir a Inicio</a>#}
+                    <form class="" method="GET">
+                        <div class="input-group-prepend row">
+                            <div class="col-md-2 my-2">
+                                <a href="{% url 'school_app:home' %}" class="form-control btn btn-warning"
+                                   type="button">Ir al
+                                    inicio</a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <select class="form-control" id="classroom_id" name="classroom">
+                                    <option disabled selected value="">Seleccionar</option>
+                                    {% for classroom in classrooms %}
+                                        <option value="{{ classroom.id }}">{{ classroom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <input class="form-control" type="date" name="date1" id="date1_id">
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <input class="form-control" type="date" name="date2" id="date2_id">
+
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button class="form-control btn btn-success" type="submit">Consultar</button>
+                            </div>
+                        </div>
+                    </form>
+                    <h1 class="my-3"><strong>{{ current_month }}</strong> - {{ current_year }}</h1>
+                </div>
+            </div>
+        </div>
+        <table class="table table-striped table-bordered" id="registers_id">
+            <thead class="table-dark">
+            <tr>
+                <th class="text-center" scope="col">#</th>
+                <th class="text-center" scope="col">Alumno(a)</th>
+                {% for i in assistances %}
+                    <th class="text-center" scope="col">{{ i.get_day }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for student_data in attendance_data %}
+                <tr>
+                    <th class="text-center" scope="row">{{ forloop.counter }}</th>
+                    <td class="text-center">{{ student_data.student.get_fullname }}</td>
+
+                    {% for attendance_info in student_data.attendance_dates %}
+                        <td class="p-0 bg-{{ attendance_info.css_class }}">
+                            <div class="">
+                                {% if attendance_info.is_present %}
+                                    <p class="text-center">Si</p>
+                                {% else %}
+                                    <p class="text-center">No</p>
+                                {% endif %}
+                            </div>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock reports %}
+
+{% block js %}
+
+    <script type="text/javascript">
+        window.onload = function () {
+            var fecha = new Date(); //Fecha actual
+            var mes = fecha.getMonth() + 1; //obteniendo mes
+            var dia = fecha.getDate(); //obteniendo dia
+            var ano = fecha.getFullYear(); //obteniendo año
+            if (dia < 10)
+                dia = '0' + dia; //agrega cero si el menor de 10
+            if (mes < 10)
+                mes = '0' + mes //agrega cero si el menor de 10
+            document.getElementById('date2_id').value = ano + "-" + mes + "-" + dia;
+        }
+
+        $('#registers_id').DataTable({
+            language: {
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "sSearch": "Buscar:",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "sProcessing": "Procesando...",
+            },
+            searching: false,
+            responsive: true,
+            columnDefs: [
+                {targets: 'no-responsive', responsivePriority: 1, visible: false},
+                {targets: [0, 1], responsivePriority: 2}, // Aquí especifica las columnas que deben mostrarse en dispositivos móviles (0 y 1 son las dos primeras columnas)
+            ]
+        });
+    </script>
+{% endblock js %}

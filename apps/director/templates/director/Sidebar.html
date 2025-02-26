@@ -1,0 +1,109 @@
+
+<div id="sidebar" class="aside fixed hidden lg:flex flex-col z-50 w-[18rem] min-w-[18rem] max-w-[18rem] h-screen bg-blue-500 px-1 ">
+  <button class="close text-white flex w-full justify-end lg:invisible py-3 px-3" id="buttonCloseSidebar">
+    <svg id="close-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+  </button>
+  <div class="top flex flex-col items-center">
+      <img class="w-[8rem]" src="{{ school.get_logo }}" alt="">
+      <h2 class="mt-4 text-white text-2xl font-bold">{{ school.name }}</span></h2>
+  </div>
+  <div class="sidebar text-white mt-10">
+    <a href="{% url 'school_app:school_home' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% with school_slug='/'|add:school.slug|add:'/' %}{% if school_slug == request.path %} active ps-10 bg-blue-400{% endif %}{% endwith %}">
+    <svg id="dashboard-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>
+      <h3 class="">Inicio</h3>
+    </a>
+
+    <div id="dropdown" class="">
+      <a href="#" class="dropdown-btn a h-[3.7rem] flex items-center justify-between px-5 hover:ps-12 hover:bg-blue-400 ease-in duration-300">
+        <span class="flex items-center gap-x-3">
+          <svg id="description-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg>
+          <h3>Reporte de Asistencia</h3>
+        </span>
+        <svg id="expand_more-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z"/></svg>
+      </a>
+      <div id="dropdown-content" class="dropdown-content bg-blue-600 hidden">
+        <a href="{% url 'assistance_app:general_assistance_report' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300 
+        {% if '/general_assistance_report/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+        <svg id="order_approve-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m691-150 139-138-42-42-97 95-39-39-42 43 81 81ZM240-600h480v-80H240v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40ZM120-80v-680q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v267q-19-9-39-15t-41-9v-243H200v562h243q5 31 15.5 59T486-86l-6 6-60-60-60 60-60-60-60 60-60-60-60 60Zm120-200h203q3-21 9-41t15-39H240v80Zm0-160h284q38-37 88.5-58.5T720-520H240v80Zm-40 242v-562 562Z"/></svg>
+          <h3>Reporte de Asistencia General</h3>
+        </a>
+        <a href="{% url 'assistance_app:daily_assistance_report' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+        {% if '/daily_assistance_report/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+          <svg id="overview-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m787-145 28-28-75-75v-112h-40v128l87 87Zm-587 25q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v268q-19-9-39-15.5t-41-9.5v-243H200v560h242q3 22 9.5 42t15.5 38H200Zm0-120v40-560 243-3 280Zm80-40h163q3-21 9.5-41t14.5-39H280v80Zm0-160h244q32-30 71.5-50t84.5-27v-3H280v80Zm0-160h400v-80H280v80ZM720-40q-83 0-141.5-58.5T520-240q0-83 58.5-141.5T720-440q83 0 141.5 58.5T920-240q0 83-58.5 141.5T720-40Z"/></svg>
+          <h3>Reporte de Asistencia Diario</h3>
+        </a>
+        <a href="{% url 'assistance_app:all_course_assistance_report' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+        {% if '/all_course_assistance_report/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+        <svg id="event-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M580-240q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+          <h3>Reporte de Asistencia por curso</h3>
+        </a>
+      </div>
+    </div>
+
+    <div id="dropdown" class="">
+      <button class="dropdown-btn a h-[3.7rem] w-[100%] flex items-center justify-between px-5 hover:ps-12 hover:bg-blue-400 ease-in duration-300">
+        <span class="flex items-center gap-x-3">
+          <i class="material-symbols-sharp">description</i>
+          <h3>Justificaciones</h3>
+        </span>
+        <i class="material-symbols-sharp">expand_more</i>
+      </button>
+      <div id="dropdown-content" class="dropdown-content bg-blue-600 hidden">
+        <a href="{% url 'assistance_app:justify_assistance' slug=school.slug %}" class="a h-[3rem] w-full flex items-center ps-10 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+        {% if '/justify_assistance/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+          <i class="material-symbols-sharp">add_notes</i>
+          <h3>Crear justificación</h3>
+        </a>
+        <a href="{% url 'assistance_app:justifications' slug=school.slug %}" class="a h-[3rem] flex items-center ps-10 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+        {% if '/justifications/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+          <i class="material-symbols-sharp">overview</i>
+          <h3>Ver justificaciones</h3>
+        </a>
+      </div>
+    </div>
+
+    {% if request.user.is_superuser %}
+    <a href="{% url 'assistance_app:add_students' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% if '/add_students/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+    <svg id="person_add-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm80-80h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0-80Zm0 400Z"/></svg>
+      <h3>Añadir estudiantes</h3>
+    </a>
+    <a href="{% url 'assistance_app:add_teachers' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% if '/add_students/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+    <svg id="person_add-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M720-400v-120H600v-80h120v-120h80v120h120v80H800v120h-80Zm-360-80q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm80-80h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0-80Zm0 400Z"/></svg>
+      <h3>Añadir profesores</h3>
+    </a>
+    <a href="{% url 'assistance_app:add_blocks' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% if '/add_blocks/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+    <svg id="person_add-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
+      <h3>Añadir bloques</h3>
+    </a>
+    <a href="{% url 'assistance_app:add_course' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% if '/add_course/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+    <svg id="person_add-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
+      <h3>Añadir cursos</h3>
+    </a>
+    <a href="{% url 'assistance_app:send_test_messages' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% if '/add_course/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+    <svg id="person_add-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
+      <h3>Llamadas de prueba</h3>
+    </a>
+    <a href="{% url 'assistance_app:other_actions' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% if '/add_course/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+    <svg id="person_add-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
+      <h3>Otras acciones</h3>
+    </a>
+    {% endif %}
+
+    <a href="{% url 'assistance_app:settings' slug=school.slug %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300
+    {% if '/settings/' in request.path %} active ps-10 bg-blue-400{% endif %}">
+    <svg id="settings-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
+      <h3>Ajustes</h3>
+    </a>
+    <a href="{% url 'logout' %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-red-400 ease-in duration-300">
+      <svg id="logout-icon" fill="white" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
+      <h3>Cerrar Sesion</h3>
+    </a>
+  </div>
+</div>

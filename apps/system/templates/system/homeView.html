@@ -1,0 +1,411 @@
+{% extends 'system/base.html' %}
+{% load static %}
+{% block title %}Inicio{% endblock title %}
+{% block content %}
+    <div class="container my-5">
+        <h1 class="mb-4 text-center">Dashboard General</h1>
+
+        <div class="text-center mb-4">
+            <a href="{% url 'system_app:student_list' %}" class="btn btn-primary">Ver Lista de Estudiantes</a>
+        </div>
+
+        <h2 class="text-center">Estadística de Asistencia por Colegios</h2>
+        <p class="mb-4 text-center">{{ select_date }}</p>
+
+        <div class="row justify-content-center">
+            {% for school in school_data %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ school.school_name }}</h5>
+                            <canvas id="chart-{{ school.school_name }}" class="my-4"></canvas>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h2 class="mb-4 text-center">Envío de Reporte</h2>
+
+        <div class="row justify-content-center">
+            <!-- Dropdown de Colegios -->
+            <div class="col-md-6 mb-3">
+                <label for="school-select" class="form-label">Selecciona un Colegio</label>
+                <select id="school-select" class="form-select">
+                    <option value="">Selecciona un Colegio</option>
+                    {% for school in schools %}
+                        <option value="{{ school.slug }}">{{ school.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Dropdown de Niveles -->
+            <div class="col-md-6 mb-3">
+                <label for="level-select" class="form-label">Selecciona un Nivel</label>
+                <select id="level-select" class="form-select" disabled>
+                    <option value="">Selecciona un Nivel</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Dropdown de Grados -->
+            <div class="col-md-6 mb-3">
+                <label for="grade-select" class="form-label">Selecciona un Grado</label>
+                <select id="grade-select" class="form-select" disabled>
+                    <option value="">Selecciona un Grado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Dropdown de Secciones -->
+            <div class="col-md-6 mb-3">
+                <label for="section-select" class="form-label">Selecciona una Sección</label>
+                <select id="section-select" class="form-select" disabled>
+                    <option value="">Selecciona una Sección</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Dropdown de Meses -->
+            <div class="col-md-6 mb-4">
+                <label for="month-select" class="form-label">Selecciona un Mes</label>
+                <select id="month-select" class="form-select" disabled>
+                    <option value="">Selecciona un Mes</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <!-- Botón de enviar informe -->
+            <div class="col-md-3 text-center">
+                <button id="send-week-report-btn" class="btn btn-success" disabled>Enviar Reporte Semanal</button>
+            </div>
+            <div class="col-md-3 text-center">
+                <button id="send-month-report-btn" class="btn btn-warning" disabled>Enviar Reporte Mensual</button>
+            </div>
+        </div>
+
+
+    </div>
+
+{% endblock content %}
+
+
+
+{% block js %}
+    <script type="application/javascript">
+
+        function sendSchoolReportWeek(sectionId) {
+            const url = "{% url 'system_app:send_school_report_week' %}";
+            const data = {
+                sectionId: sectionId
+            };
+            $.ajax({
+                url: url,
+                async: true,
+                dataType: 'json',
+                type: 'POST',
+                data: {'data': JSON.stringify(data)},
+                success: function (response) {
+                    console.log(response)
+
+                    toastr["success"](response.message, 'Éxito')
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                },
+                error: function (response) {
+                    toastr["warning"](response.message, response.status)
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                }
+            });
+        }
+
+        function sendSchoolReportMonth(sectionId, month) {
+            const url = "{% url 'system_app:send_school_report_month' %}";
+            const data = {
+                sectionId: sectionId,
+                month: month
+            };
+            $.ajax({
+                url: url,
+                async: true,
+                dataType: 'json',
+                type: 'POST',
+                data: {'data': JSON.stringify(data)},
+                success: function (response) {
+                    console.log(response)
+
+                    toastr["success"](response.message, 'Éxito')
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                },
+                error: function (response) {
+                    toastr["warning"](response.message, response.status)
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "1000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            function checkAllFieldsSelected() {
+                // Verifica si todos los campos están seleccionados
+                if ($('#school-select').val() && $('#level-select').val() && $('#grade-select').val() && $('#section-select').val()) {
+                    $('#send-week-report-btn').prop('disabled', false); // Habilitar botón
+                    if ($('#month-select').val()) {
+                        $('#send-month-report-btn').prop('disabled', false); // Habilitar botón
+                    } else {
+                        $('#send-month-report-btn').prop('disabled', true); // Deshabilitar botón
+                    }
+
+                } else {
+                    $('#send-week-report-btn').prop('disabled', true); // Deshabilitar botón
+                    $('#send-month-report-btn').prop('disabled', true); // Deshabilitar botón
+                }
+            }
+
+            // Evento para cuando se selecciona un colegio
+            $('#school-select').change(function () {
+                let schoolSlug = $(this).val();
+                if (schoolSlug) {
+                    $.ajax({
+                        url: "{% url 'school_app:get_levels' %}",
+                        data: {slug: schoolSlug},
+                        success: function (data) {
+                            $('#level-select').empty().append('<option value="">Selecciona un Nivel</option>');
+                            $('#grade-select').empty().append('<option value="">Selecciona un Grado</option>').prop('disabled', true);
+                            $('#section-select').empty().append('<option value="">Selecciona una Sección</option>').prop('disabled', true);
+                            $('#month-select').val("").prop('disabled', true);
+
+                            $.each(data, function (index, level) {
+                                $('#level-select').append('<option value="' + level.pk + '">' + level.fields.name + '</option>');
+                            });
+                            $('#level-select').prop('disabled', false);
+                            checkAllFieldsSelected();
+                        }
+                    });
+                } else {
+                    $('#level-select').empty().append('<option value="">Selecciona un Nivel</option>').prop('disabled', true);
+                    $('#grade-select').empty().append('<option value="">Selecciona un Grado</option>').prop('disabled', true);
+                    $('#section-select').empty().append('<option value="">Selecciona una Sección</option>').prop('disabled', true);
+                    $('#month-select').val("").prop('disabled', true);
+                    checkAllFieldsSelected();
+                }
+            });
+
+            // Evento para cuando se selecciona un nivel
+            $('#level-select').change(function () {
+                let levelId = $(this).val();
+                let schoolSlug = $('#school-select').val();
+                if (levelId) {
+                    $.ajax({
+                        url: "{% url 'school_app:get_grades' %}",
+                        data: {slug: schoolSlug, level_id: levelId},
+                        success: function (data) {
+                            $('#grade-select').empty().append('<option value="">Selecciona un Grado</option>');
+                            $('#section-select').empty().append('<option value="">Selecciona una Sección</option>').prop('disabled', true);
+                            $('#month-select').val("").prop('disabled', true);
+
+                            $.each(data, function (index, grade) {
+                                $('#grade-select').append('<option value="' + grade.pk + '">' + grade.fields.name + '</option>');
+                            });
+                            $('#grade-select').prop('disabled', false);
+                            checkAllFieldsSelected();
+                        }
+                    });
+                } else {
+                    $('#grade-select').empty().append('<option value="">Selecciona un Grado</option>').prop('disabled', true);
+                    $('#section-select').empty().append('<option value="">Selecciona una Sección</option>').prop('disabled', true);
+                    $('#month-select').val("").prop('disabled', true);
+                    checkAllFieldsSelected();
+                }
+            });
+
+            // Evento para cuando se selecciona un grado
+            $('#grade-select').change(function () {
+                let gradeId = $(this).val();
+                if (gradeId) {
+                    $.ajax({
+                        url: "{% url 'school_app:get_sections' %}",
+                        data: {grade_id: gradeId},
+                        success: function (data) {
+                            $('#section-select').empty().append('<option value="">Selecciona una Sección</option>');
+                            $('#month-select').val("").prop('disabled', true);
+
+                            $.each(data, function (index, section) {
+                                $('#section-select').append('<option value="' + section.pk + '">' + section.fields.name + '</option>');
+                            });
+                            $('#section-select').prop('disabled', false);
+                            checkAllFieldsSelected();
+                        }
+                    });
+                } else {
+                    $('#section-select').empty().append('<option value="">Selecciona una Sección</option>').prop('disabled', true);
+                    $('#month-select').val("").prop('disabled', true);
+                    checkAllFieldsSelected();
+                }
+            });
+
+            // Evento para cuando se selecciona una sección
+            $('#section-select').change(function () {
+                let sectionId = $(this).val();
+                if (sectionId) {
+                    $('#month-select').prop('disabled', false);
+                } else {
+                    $('#month-select').val("").prop('disabled', true);
+                }
+
+                checkAllFieldsSelected();
+            });
+
+            // Evento para cuando se selecciona el mes
+            $('#month-select').change(function () {
+                checkAllFieldsSelected();
+            });
+
+            // Evento para el botón de "Enviar Informe Semanal"
+            $('#send-week-report-btn').click(function () {
+                let sectionId = $('#section-select').val();
+                if (sectionId) {
+                    sendSchoolReportWeek(sectionId);
+                }
+            });
+
+            // Evento para el botón de "Enviar Informe Mensual"
+            $('#send-month-report-btn').click(function () {
+                let sectionId = $('#section-select').val();
+                let monthId = $('#month-select').val();
+                if (sectionId && monthId) {
+                    sendSchoolReportMonth(sectionId, monthId);
+                }
+            });
+
+        });
+
+        {% for school in school_data %}
+            {
+                let ctx = document.getElementById('chart-{{ school.school_name }}');
+                let attendanceData = JSON.parse('{{ school.attendance_data|escapejs }}');
+
+                let data = Object.values(attendanceData);
+                let labels = Object.keys(attendanceData);
+
+                labels = labels.map(label => label === 'Presente' ? 'Temprano' : label);
+
+                let total = data.reduce((acc, cur) => acc + cur, 0);
+                let percentages = data.map(value => ((value / total) * 100).toFixed(2) + '%');
+
+                let colors = [
+                    'rgba(0, 255, 0, 0.8)',   // Verde (Presente)
+                    'rgba(255, 151, 0, 0.8)', // Naranja (Tardanza)
+                    'rgba(255, 0, 0, 0.8)'    // Rojo (Falta)
+                ];
+
+                let myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors.slice(0, data.length),
+                            hoverOffset: 4
+                        }],
+                        labels: labels.map((label, index) => label + ' (' + percentages[index] + ')')
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: false,
+                                text: 'Dia: ',
+                            }
+                        }
+                    }
+                });
+            }
+        {% endfor %}
+    </script>
+{% endblock %}

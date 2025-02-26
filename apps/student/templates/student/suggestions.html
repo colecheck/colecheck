@@ -1,0 +1,22 @@
+<input type="text" id="search-box">
+<ul id="suggestions"></ul>
+
+<script>
+document.getElementById('search-box').addEventListener('input', function() {
+    var query = this.value;
+    if (query.length >= 3) {
+        fetch('/student/suggestions/?query=' + query)
+        .then(response => response.json())
+        .then(data => {
+            var suggestions = data.suggestions;
+            var suggestionsList = document.getElementById('suggestions');
+            suggestionsList.innerHTML = '';
+            suggestions.forEach(function(suggestion) {
+                var li = document.createElement('li');
+                li.textContent = suggestion.last_name;
+                suggestionsList.appendChild(li);
+            });
+        });
+    }
+});
+</script>

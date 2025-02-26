@@ -1,0 +1,87 @@
+{% extends "director/Layout.html" %}
+
+{% block content %}
+<div id="container" class="w-[100%] grid lg:grid-cols-2 grid-cols-1">
+    <div class="p-10">
+        <h2 class="my-2 font-semibold text-2xl">Importar archivo de estudiantes</h2>
+        <form id="importForm" method="post" enctype="multipart/form-data" action="{% url 'assistance_app:import_xlsx' slug=school.slug %}">
+            {% csrf_token %}
+            <label for="level"><strong>Seleccionar nivel:</strong></label> <br />
+            <select id="level" class="p-2 border-2 rounded-md" name="level">
+                {% for level in ed_levels %} 
+                <option class="p-2" value="{{ level.name }}">{{ level.name }}</option>
+                {% endfor %}
+            </select> <br />
+            <label for="archivo_excel"><strong>Subir archivo de excel (.xlsx):</strong></label>
+            <input type="file" name="archivo_excel" accept=".xlsx" required id="file_input" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" aria-describedby="file_input_help">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">(.xlsx).</p>
+            <button class="mt-4 rounded p-2 bg-green-500 text-white" type="submit">Importar Archivo Excel</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    const form = document.getElementById('importForm');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            toastr["success"](data.message, "Éxito")
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+            
+            document.getElementById('file_input').value = '';
+        } else {
+            toastr["error"](data.message, "Error")
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+            document.getElementById('file_input').value = '';
+        }
+    });
+</script>
+
+
+{% endblock %}

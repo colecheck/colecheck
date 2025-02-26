@@ -1,0 +1,181 @@
+{% extends "director/Layout.html" %}
+
+{% block content %}
+<div id="container" class="w-[100%] lg:p-10 p-3">
+    <h1 class="text-2xl"><strong>Ajustes</strong></h1>
+    <div class="mt-2 mb-4">
+        <h2 class="text-xl mb-1"><strong>Editar Horar de Entrada y Salida</strong></h2>
+        <p class="text-justify text-xs lg:text-sm"> * La tolerancia es el tiempo, despues de la hora de entrada, que seguirá considerando normal la asistencia de los estudiantes. Despues del tiempo de tolerancia, el sistema lo considerará tardanza </p>
+        <p class="text-justify text-xs lg:text-sm"> * El valor de la tolerancia puede ser de 0 minutos (Sin tolerancia) segun se desee.</p>
+
+        <div class="w-full flex flex-wrap justify-center gap-4 mt-1">
+            {% for level in levels %}
+            <div name="level-card" class="mt-2 lg:w-[30%] lg:min-w-[22rem] w-[90%] bg-blue-100 border rounded-lg  p-3  ">
+                <div class="flex flex-col items-center w-[100%]">
+                    <h3 class="font-semibold text-lg"><strong>{{ level.name }}</strong></h3>
+                    <div class="mt-2 flex flex-col lg:flex-row gap-4">
+                        <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2 items-center">
+                            <h3 class="font-semibold">Entrada</h3>
+                            <input id="entrance-time-{{level.name}}" name="entrance-{{level.name}}" disabled type="time" value="{{ level.entrance_time }}" class="py-2 px-4 border border-gray-300 rounded">
+                        </div>
+                        <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2 items-center">
+                            <h3 class="font-semibold">Tolerancia</h3>
+                            <div class="p-2 flex items-center border border-gray-300 rounded">
+                                <input id="tolerance-{{level.name}}" name="tolerance-{{level.name}}" disabled type="number" value="{{level.tolerance}}" class="w-[2.2rem] bg-white disabled:bg-transparent text-center border-r-2 border-gray-300">
+                                <span class="ps-1">min</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 lg:flex lg:flex-col gap-2 items-center">
+                            <h3 class="font-semibold">Salida</h3>
+                            <input id="exit-time-{{level.name}}" name="exit-{{level.name}}" disabled type="time" value="{{ level.exit_time }}" class="py-2 px-4 border border-gray-300 rounded">
+                        </div>
+                    </div>
+                    <input type="hidden" name="level_name" value="{{ level.name }}">
+                    <button type="button" onclick="togleTimeButton(this)" class="mt-2 px-16 py-1 rounded bg-orange-500 text-white disabled:opacity-75">Editar</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            
+        </div>
+    </div>
+    <hr>
+</div>
+
+{% endblock %}
+{% block js %}
+<script>
+    /*----------------Codigo Settings-------------*/
+    /*Código para el cambio de boton*/
+    function togleTimeButton(button){
+        if (button.innerText === "Editar"){
+            button.innerText = "Guardar";
+            button.classList.toggle("bg-green-500");
+            button.classList.toggle("bg-orange-500");
+            let divs = button.parentElement.children[1]
+            console.log(divs)
+            divs.children[0].children[1].disabled = false;
+            divs.children[1].children[1].children[0].disabled = false;
+            divs.children[2].children[1].disabled = false;
+        } else {
+            let divs = button.parentElement.children[1]
+            if (divs.children[0].children[1].value == "") {
+                alert("Coloque una hora de entrada valida");
+                return false;
+            } else if (divs.children[1].children[1].children[0].value < 0) {
+                alert("Coloque una hora de tolerancia valida")
+                return false;
+            } else if (divs.children[1].children[1].children[0].value == "") {
+                divs.children[1].children[1].children[0].value = 0;
+            } else if (divs.children[2].children[1].value == "") {
+                alert("Coloque una hora de salida valida");
+                return false;
+            }
+            button.classList.toggle("bg-green-500");
+            button.classList.toggle("bg-orange-500");
+            button.innerText = "Editar";
+            divs.children[0].children[1].disabled = true;
+            divs.children[1].children[1].children[0].disabled = true;
+            divs.children[2].children[1].disabled = true;
+            changeLevelTimes(button);
+            return true;
+        }
+    }
+
+    function changeLevelTimes(button) {
+        let divs = button.parentElement.children[1];
+        const url = '{% url "assistance_app:change_level_times" slug=school.slug %}';
+        const levelName = button.parentElement.children[2].value
+        const schoolSlug = "{{ school.slug }}";
+        const newEntranceTime = divs.children[0].children[1].value
+        const newExitTime = divs.children[2].children[1].value
+        const newToleranceTime = divs.children[1].children[1].children[0].value
+
+        const data = {
+            school_slug: schoolSlug, 
+            level_name: levelName,
+            new_entrance_time: newEntranceTime,
+            new_exit_time: newExitTime,
+            new_tolerance_time: newToleranceTime
+        };
+
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            data: {'data': JSON.stringify(data)},
+            success: function (response) {
+                toastr["success"]("Ajustes cambiados", "Éxito")
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+            },
+            error: function (response) {
+                toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+            }
+        });
+
+
+    }
+
+    /*
+    function enableEditTime(){
+        let levels = JSON.parse('{{ levels_json|escapejs }}');
+
+        for (let i = 0; i < levels.length; i++) {
+            var ent = `entrance-time-${levels[i].name}`;
+            var ext = `exit-time-${levels[i].name}`;
+            document.getElementById(ent).disabled = false;
+            document.getElementById(ext).disabled = false;
+        }
+        document.getElementById("edit-time").disabled = true;
+        document.getElementById("save-time").disabled = false;
+    }
+    
+    function sendNewTime(){
+        //Añadir codigo para el envio del cambio de hora de entrada
+        let levels = JSON.parse('{{ levels|escapejs }}');
+
+        for (let i = 0; i < levels.length; i++) {
+            document.getElementById(`entrance-time-${levels[i].name}`).disabled = true;
+            document.getElementById(`exit-time-${levels[i].name}`).disabled = true;
+        }
+        document.getElementById("edit-time").disabled = false;
+        document.getElementById("save-time").disabled = true;
+    }
+    */
+</script>
+{% endblock js %}

@@ -1,0 +1,26 @@
+
+<div id="sidebar" class="aside lg:block lg:static fixed z-20 flex-col justify-start items-center w-[20rem] h-screen bg-blue-500 px-1 hidden">
+  <div class="close text-white flex w-full justify-end" id="buttonCloseSidebar">
+      <i class="material-symbols-sharp p-4 text-2xl lg:invisible">close</i>
+  </div>
+  <div class="top flex flex-col items-center">
+    {% if school.logo %}
+    <img class="w-[8rem]" src="{{school.logo}}" alt="">
+  {% endif %}
+      <h2 class="mt-4 text-white text-2xl font-bold">{{ school.name }}</span></h2>
+  </div>
+  <div class="sidebar text-white mt-10">
+    <a href="{% url 'school_app:home' %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:bg-blue-300 active ps-10 bg-blue-400">
+      <i class="material-symbols-sharp text-white">dashboard</i>
+      <h3 class="">Dashboard</h3>
+    </a>
+    <a href="/assistant/take_assistance" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300">
+      <i class="material-symbols-sharp">order_approve</i>
+      <h3>Tomar Asistencia</h3>
+    </a>
+    <a href="{% url 'assistance_app:general_assistance_report' %}" class="a h-[3.7rem] flex items-center px-5 gap-x-3 hover:ps-12 hover:bg-blue-400 ease-in duration-300">
+      <i class="material-symbols-sharp">order_approve</i>
+      <h3>Revisar Asistencia</h3>
+    </a>
+  </div>
+</div>

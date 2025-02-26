@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColeCheck - Plataforma Educativa</title>
+    <meta name="description" content="Nuestra plataforma educativa está a la vanguardia en tecnología actual 
+    y se adapta a las necesidades de tu escuela. Es muy fácil de usar y auxiliares y profesores pueden
+    realizar multiples acciones como tomar asistencia mediante QR y otros.">
+    <meta name="author" content="ColeCheck">
+    <meta name="keywords" content="colecheck, colegio, asistencia, educacion, academia, software, plataforma, asistencia">
+    <link rel="canonical" href="https://www.colecheck.com/">
+    <meta http-equiv="content-language" content="es">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <!--<script src="https://cdn.tailwindcss.com"></script>-->
+    <script src="{% static 'js/global.js' %}"></script>
+    <link rel="icon" href="{% static 'img/favicons/favicon.ico' %}"/>
+
+</head>
+<body class="w-full">
+    <div class="topbar sticky top-0 h-[7rem] lg:px-40 px-8 w-full flex lg:justify-between justify-center items-center sticky bg-blue-300">
+        <div>
+            <img class="h-[4rem]" src="{% static 'img/colecheck.png'%}" alt="">
+        </div>
+        <div class="hidden gap-6 lg:flex">
+            <a href="#" class="py-3 px-8 text-md rounded-full bg-white">Colegio</a>
+            <a href="#prices" class="py-3 px-8 text-md rounded-full bg-white">Precios</a>
+            <a href="#school" class="py-3 px-8 text-md rounded-full bg-blue-600 text-white">Servicios</a>
+            <a href="https://api.whatsapp.com/send?phone=51978510396&text=Hola,%20quiero%20una%20demostraci%C3%B3n%20gratuita%20de%20ColeCheck" class="py-3 px-8 text-md rounded-full bg-blue-600 text-white">Contáctanos</a>
+        </div>
+    </div>
+    <div class="image lg:px-40 px-8 bg-blue-300 py-8 grid justify-items-center lg:grid-cols-2 grid-cols-1 gap-32 rounded-b-full">
+        <div class="flex flex-col justify-center">
+            <h1 class="font-bold text-5xl mb-6">Somos la mejor plataforma para gestionar tu colegio</h1>
+            <h3 class="text-2xl mb-6">Experiencia educativa virtuales y ayuda con la gestión del colegio</h3>
+            <a href="#school" class="w-[18rem] rounded-full px-4 py-2 text-2xl bg-blue-600 text-white text-center">Aprender más</a>
+        </div>
+        <div class="">
+            <img class="lg:h-[24rem] h-[12rem] rounded-3xl" src="https://t4.ftcdn.net/jpg/00/52/12/55/360_F_52125540_utaCmaQtSjWeYIi9gOaqRKR7S16SNkP8.jpg" alt="">
+        </div>
+    </div>
+    <div id="school" class="school my-16">
+        <div class="flex justify-center ">
+            <form action="{% url 'login' %}">
+            <button class="rounded-full px-12 py-3 text-xl bg-blue-600 text-white font-semibold">Ingresar</button>
+            </form>
+        </div>
+    </div>
+    <div id="services" class="flex justify-center">
+        <div class="w-[30rem] text-center">
+            <p class="text-3xl font-bold my-4">Todo en uno, <span class="text-orange-500">una Plataforma multifuncional</span></p>
+            <p class="text-lg text-slate-500">Administra todas las áreas de tu Colegio en una sola plataforma moderna, ágil y súper intuitiva 
+                adaptable a cada realidad educativa sin costos ocultos y al alcance de todos.</p>
+        </div>
+    </div>
+    <div class="cards lg:px-40 px-8 my-16 flex flex-wrap justify-around gap-16">
+        <div class="rounded-lg shadow-lg text-center w-[22rem] p-8">
+            <span class="material-symbols-sharp bg-blue-500 text-4xl text-white rounded-full p-3">calendar_today</span>
+            <h3 class="text-xl text-blue-500 font-bold my-6">Control de Personal</h3>
+            <p class="text-md text-slate-500">
+                Control simple y seguro del personal de la institución, bridamos soporte para manejar las 
+                asistencias, tardanzas y faltas no solo de estudiantes sino también del personal administrativo,
+                manejando horarios entrada y salida, además de registros por cursos
+            </p>
+        </div>
+        <div class="rounded-lg shadow-lg text-center w-[22rem] p-8">
+            <span class="material-symbols-sharp bg-blue-500 text-4xl text-white rounded-full p-3">how_to_reg</span>
+            <h3 class="text-xl text-blue-500 font-bold my-6">Sistema de Asistencia</h3>
+            <p class="text-md text-slate-500">
+                Control simple y seguro de las asistencias mediante código QR, utilizando tan solo la 
+                cámara del celular, puede revisar y descargar el Código QR de cada estudiante desde la 
+                plataforma, imprimirlo y realizar la toma de asistencia desde la misma.
+            </p>
+        </div>
+        <div class="rounded-lg shadow-lg text-center w-[22rem] p-8">
+            <span class="material-symbols-sharp bg-blue-500 text-4xl text-white rounded-full p-3">summarize</span>
+            <h3 class="text-xl text-blue-500 font-bold my-6">Reportes de Asistencia</h3>
+            <p class="text-md text-slate-500">
+                La plataforma permite no solo ver los registros de asistencia sino también descargar los reportes
+                 de asistencia en el formato que usted desee para poder darle el uso debido, 
+                 además de ello también permite la subida de reportes de estudiantes al sistema de manera que
+                 pueda llenar con mayor facilidad la base de datos.
+            </p>
+        </div>
+    </div>
+    <div id="prices" class="prices text-center lg:px-32 px-12 flex flex-col gap-4 items-center py-24">
+        <p class="text-3xl font-bold">Nuestro Plan de Precios</p>
+        <p class="text-slate-500 text-xl my-4">
+            Con nuestra plataforma obtienes por un solo costo TODAS las herramientas y opciones de la 
+            plataforma, no compartes servidor con otros Colegios.
+            Costos al alcance de todas las Instituciones Educativas.
+        </p>
+        <div class="flex flex-col gap-4 bg-blue-500 lg:p-6 p-4 lg:w-[25rem] w-[100%] rounded-3xl text-white font-bold text-lg">
+            <p class="text-xl">OBTEN 3 MESES GRATIS DE PRUEBA</p>
+            <p class="font-semibold">Aseguramos un precio cómodo según la cantidad de estudiantes en la Institución Educativa</p>
+            <p>Usuarios ilimitados</p>
+            <p>Actualizaciones gratuitas</p>
+            <p>Nuevos requerimientos</p>
+            <p>Soporte 24/7</p>
+            <a href="https://api.whatsapp.com/send?phone=51978510396&text=Hola,%20quiero%20una%20demostraci%C3%B3n%20gratuita%20de%20SchoolAssistant" class="rounded-full px-4 py-3 text-lg bg-white text-black">Comprar Ahora</a href="https://api.whatsapp.com/send?phone=51978510396&text=Hola,%20quiero%20una%20demostraci%C3%B3n%20gratuita%20de%20SchoolAssistant">
+        </div>
+    </div>
+    <div class="footer text-center bg-blue-950 text-white py-8 font-bold flex flex-col items-center gap-4">
+        <div class="flex justify-center py-4 gap-4" >
+            <img class="h-[2rem]" src="{% static 'img/colecheck-white.png'%}" alt="">
+            <p class="font-bold lg:text-lg text-sm">| Plataforma de Gestión Educativa</p>
+        </div>
+        <div>
+            <a href="https://api.whatsapp.com/send?phone=51978510396&text=Hola,%20quiero%20una%20demostraci%C3%B3n%20gratuita%20de%20SchoolAssistant" class="rounded-full py-3 px-6 text-lg bg-blue-500 text-white font-bold">Contáctanos</a>
+        </div>
+        <div class="py-4 text-slate-300 mt-4">
+            <p class="">Privacidad | Términos y condiciones</p>
+            <p class="">c 2024 School Assistant Technologies Inc</p>
+        </div>
+        <div>
+            <p>Correo: </p>
+            <p>yamil250100@gmail.com</p>
+        </div>
+    </div>
+    <div class="fixed lg:bottom-12 lg:right-10 bottom-16 right-4">
+        <a class="rounded-full px-4 py-3 bg-green-500 text-white flex items-center gap-2 shadow-lg"
+        href="https://api.whatsapp.com/send?phone=51978510396&text=Hola,%20quiero%20una%20demostraci%C3%B3n%20gratuita%20de%20SchoolAssistant">
+        <span class="material-symbols-rounded border-4 border-white rounded-full p-1">call</span>
+        <span class="font-bold text-md">Hablar con un experto</span>
+    </a>
+    </div>
+    <script>
+
+    </script>
+</body>
+</html>

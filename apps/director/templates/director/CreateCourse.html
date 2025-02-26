@@ -1,0 +1,199 @@
+{% extends "director/Layout.html" %}
+{% block content %}
+<div id="container" class="w-[100%] lg:p-8 p-3">
+    <div class="flex flex-wrap gap-6 pb-6">
+        <div id="levels_select" class="flex flex-col gap-4 w-[10rem]" {% if only_level %} style="display: none;"  {% endif %}>
+            <label for="level">Selecciona el <strong>Nivel:</strong></label>
+            <select id="level" class="p-2 border-2 rounded-md" name="level" onchange="if (this.selectedIndex) updateFilteredData();">
+                <option class="p-2" value="all">-------</option>
+                {% for lev in levels %}
+                <option class="p-2" value="{{ lev.name }}">{{ lev.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+            <div class="flex flex-col gap-4 w-[10rem]">
+            <label for="cars">Selecciona el <strong>Grado:</strong></label>
+            <select id="grade" class="p-2 border-2 rounded-md"  {% if not one_level %}disabled{% endif %} onchange="if (this.selectedIndex) updateFilteredData();">
+                <option value="all">-------</option>
+                {% if one_level %}
+                {% for grad in ed_level.grades.all %}
+                    <option value="{{ grad.id }}">{{ grad.name }}</option>
+                {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        <div id="sections_select" class="flex flex-col gap-4 w-[10rem]" {% if only_section %} style="display: none;"  {% endif %}>
+            <label for="cars">Selecciona la <strong>Sección:</strong></label>
+            <select id="section" class="p-2 border-2 rounded-md"  {% if not one_grade %}disabled{% endif %} onchange="if (this.selectedIndex) updateFilteredData();">
+                <option value="blank">-------</option>
+                {% if one_grade %}
+                {% for sect in grade.sections.all %}
+                    <option value="{{ sect.id }}">{{ sect.name }}</option>
+                {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+    </div>
+    <div>
+        <label for "course_name">Nombre del curso:</label>
+        <input id="name" name="name" type="text"> <br> <br>
+        
+        <label for "course_name">Abreviatura:</label>
+        <input id="short_name" name="short_name" type="text"> <br> <br>
+
+        <label for="teacher">Selecciona el <strong>Profesor:</strong></label> <br>
+        <select id="teacher" class="p-2 border-2 rounded-md" name="teacher">
+            <option class="p-2" value="blank">--Seleccionar--</option>
+            {% for teacher_obj in teachers %} 
+            <option class="p-2" value="{{ teacher_obj.id }}">{{ teacher_obj.user.first_name }} {{teacher_obj.user.last_name}}</option>
+            {% endfor %}
+        </select>
+
+        <button type="button" onclick="createNewCourse();"  class="bg-green-500 text-white font-bold py-2 px-4 rounded disabled:opacity-75">Crear Curso</button>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="application/javascript">
+    const urlParams = new URLSearchParams(window.location.search);
+
+    let level = urlParams.get('level');
+
+    if (document.getElementById("levels_select").style.display == "none") {
+        level = "{{ ed_level.name }}";
+    }
+    const grade = urlParams.get('grade');
+    let section = urlParams.get('section');
+    if (document.getElementById("sections_select").style.display == "none") {
+        section = "{{ section.name }}";
+    }
+
+    if (level) {
+        document.getElementById('level').value = level;
+    } else {
+        document.getElementById('level').value = "all";
+    }
+    if (grade && level) {
+        document.getElementById('grade').value = grade;
+    } else {
+        document.getElementById('grade').value = "all";
+    }
+    if (section && grade && level) {
+        document.getElementById('section').value = section;
+    } else {
+        document.getElementById('section').value = "all";
+    }
+   
+
+    function updateFilteredData() {
+        var select_level = document.getElementById('level').value;
+
+        // Si solo existe un nivel en el colegio
+        if (document.getElementById("levels_select").style.display == "none") {
+            select_level = "{{ed_level.name}}";
+        }
+
+        var select_grade = document.getElementById('grade').value;
+        var select_section = document.getElementById('section').value;
+
+        if (document.getElementById("sections_select").style.display == "none") {
+            select_section = "{{section.name}}";
+        }
+        var url = '{% url "assistance_app:add_course" slug=school.slug %}?'
+        if (select_level != "all") 
+        {
+            url += "level=" + select_level + '&';         
+        }
+        if (select_level == level && select_grade != "all" && select_level != "all") 
+        {
+            url += "grade=" + select_grade + '&';
+        }
+        if (select_level == level && select_grade == grade && select_level  != "all" && select_grade != "all" && select_section != "all") 
+        {
+            url += "section=" + select_section + '&';
+        }
+
+        window.location.href = url;
+    }
+
+
+    function createNewCourse() {
+        const teacherId = document.getElementById('teacher').value
+        const gradeId = document.getElementById('grade').value
+        const sectionId = document.getElementById('section').value
+        const courseName = document.getElementById('name').value
+        const courseShortName = document.getElementById('short_name').value
+
+        const url = "{% url 'assistance_app:create_new_course' slug=school.slug %}"
+
+        const data = {
+            teacher_id: teacherId,
+            grade_id: gradeId,
+            section_id: sectionId,
+            course_name: courseName,
+            course_short_name: courseShortName
+        };
+
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            data: {'data': JSON.stringify(data)},
+            success: function (response) {
+                document.getElementById('name').value = ""
+                document.getElementById('short_name').value = ""
+                document.getElementById('teacher').value = "blank"
+                toastr["success"]("Curso Creado", "Éxito")
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+            },
+            error: function (response) {
+                toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+            }
+        });
+    }
+
+    // Event listeners for select inputs
+    document.getElementById('level').addEventListener('change', updateFilteredData);
+    document.getElementById('grade').addEventListener('change', updateFilteredData);
+    document.getElementById('section').addEventListener('change', updateFilteredData);
+
+</script>
+
+{% endblock js %}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Colores</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>/* styles.css */
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    .result {
+        font-size: 2em;
+        margin-bottom: 20px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: blink 0.5s step-start infinite alternate;
+    }
+
+    .spin-button {
+        padding: 15px 30px;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 5px;
+        background-color: #333;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .spin-button:hover {
+        background-color: #555;
+    }
+
+    .red {
+        background-color: red;
+        color: white;
+    }
+
+    .black {
+        background-color: black;
+        color: white;
+    }
+
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    </style>
+
+
+</head>
+<body>
+<div class="container">
+    <div class="container">
+        <div id="result" class="result"></div>
+    </div>
+    <script src="script.js"></script>
+</div>
+<script>
+    // script.js
+    function getRandomColor() {
+        const colors = ['rojo', 'negro'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function updateResult() {
+        const resultDiv = document.getElementById('result');
+        const randomColor = getRandomColor();
+
+        resultDiv.textContent = randomColor.charAt(0).toUpperCase() + randomColor.slice(1);
+        resultDiv.className = 'result ' + randomColor;
+    }
+
+    function blinkAndChange() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.animation = 'blink 1s step-start 5 alternate';
+
+        setTimeout(() => {
+            updateResult();
+            resultDiv.style.animation = '';
+        }, 5000); // Parpadea durante 5 segundos antes de cambiar
+    }
+
+    // Actualizar el resultado al cargar la página
+    window.onload = function () {
+        updateResult();
+        setInterval(blinkAndChange, 40000); // Cambiar cada 40 segundos
+    }
+
+
+</script>
+</body>
+</html>

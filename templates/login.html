@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <!-- <link rel="stylesheet" href="{% static 'css/login.css' %}">-->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{% static 'img/favicons/favicon.ico' %}"/>
+
+</head>
+<body class="lg:bg-gray-50 lg:dark:bg-gray-900 bg-white">
+    <div class=" lg:h-screen flex flex-col items-center justify-center lg:mt-0 mt-5">
+        <div class="w-[90%] lg:w-[30%]">
+            <a href="#" class="lg:w-50 lg:mb-6 mb-0 flex justify-center">
+                <img class="lg:w-[80%] w-[50%]" src="{% static 'img/colecheck.png' %}" alt="logo">
+            </a>
+            <div class="lg:p-6 p-8 w-full bg-white rounded-lg shadow dark:border dark:bg-gray-800 dark:border-gray-700">
+                <h1 class="lg:text-2xl font-bold text-gray-900 text-5xl dark:text-white lg:mb-4 mb-4 ">
+                    Inicia sesión en tu cuenta
+                </h1>
+                {% if form.errors %}
+                    <div class="bg-red-200 text-red-600 px-3 py-2" role="alert">
+                        Usuario o contraseña incorrecta, inténtelo de nuevo.
+                    </div>
+                {% endif %}
+                <form class="flex flex-col lg:gap-4 gap-8" method="POST">
+                    {% csrf_token %}
+                    <div class="flex flex-col gap-4 lg:gap-1">
+                        <label for="email" class="lg:text-lg text-4xl font-medium text-gray-900 dark:text-white">Ingresa tu usuario</label>
+                        <input type="text" name="username" id="email" class="lg:p-2 p-10 text-4xl lg:text-base bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                    </div>
+                    <div class="flex flex-col gap-4 lg:gap-1">
+                        <label for="password" class="lg:text-lg text-4xl font-medium text-gray-900 dark:text-white">Contraseña</label>
+                        <input type="password" name="password" id="password" placeholder="" class="lg:p-2 p-10 text-4xl lg:text-base bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="remember" aria-describedby="remember" type="checkbox" class="w-8 h-8 lg:w-4 lg:h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800">
+                            </div>
+                            <div class="ml-3 lg:text-sm text-2xl">
+                                <label for="remember" class="text-gray-500 dark:text-gray-300">Recordarme</label>
+                            </div>
+                        </div>
+                        <!--
+                        <a href="#" class="lg:text-sm text-2xl font-medium text-primary-600 hover:underline dark:text-primary-500">Recuperar Contraseña</a>
+                        -->
+                    </div>
+                    <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium lg:rounded-lg rounded-full lg:text-sm text-5xl px-5 lg:py-2.5 py-10 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-primary-800">Ingresar</button>
+                    <!--<p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                        Don’t have an account yet? <a href="#" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
+                    </p>
+                    -->
+                </form>
+            </div>
+        </div>
+    </div>
+<script src="{% static 'js/login.js' %}"></script>
+
+</body>
+</html>

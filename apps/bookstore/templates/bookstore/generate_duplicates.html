@@ -1,0 +1,276 @@
+<!doctype html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Colecheck - Duplicados</title>
+
+    <meta name="description" content="Nuestra plataforma educativa está a la vanguardia en tecnología actual
+    y se adapta a las necesidades de tu escuela. Es muy fácil de usar y auxiliares y profesores pueden
+    realizar multiples acciones como tomar asistencia mediante QR y otros.">
+    <meta name="author" content="ColeCheck">
+    <meta name="keywords"
+          content="colecheck, colegio, asistencia, educacion, academia, software, plataforma, asistencia">
+    <link rel="canonical" href="https://www.colecheck.com/">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+    <!--<script src="https://cdn.tailwindcss.com"></script>-->
+    <script src="{% static 'js/global.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'vendors/toastr/toastr.min.css' %}">
+    <link rel="icon" href="{% static 'img/favicons/favicon.ico' %}"/>
+
+</head>
+<body>
+<div class="flex items-center justify-center min-h-screen bg-gray-50">
+    <div class="w-full max-w-md bg-gray-100 rounded-lg shadow-md p-6">
+        <!-- Imagen -->
+        <div class="flex justify-center mb-4">
+            <img src="{% static 'img/colecheck.png' %}" alt="Imagen de Estudiante" class="h-[4rem]">
+        </div>
+
+        <!-- Título debajo de la imagen -->
+        <div class="text-center mb-6">
+            <h1 class="text-xl font-semibold text-gray-800">{{ school.name }}</h1>
+        </div>
+
+        <!-- Formulario -->
+        <div class="mb-4">
+            <label for="student" class="block text-sm font-medium text-gray-700">Buscar Estudiante</label>
+            <select id="student"
+                    class="js-example-placeholder-single w-full border-gray-300 rounded-md shadow-sm">
+                {% for student in students %}
+                    <option></option>
+                    <option value="{{ student.dni }}">{{ student.last_name }} {{ student.first_name }} -
+                        {{ student.grade.short_name }}{{ student.section.name }} - {{ student.dni }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="amount" class="block text-sm font-medium text-gray-700">Precio Duplicado (S/):</label>
+            <input type="number" id="amount" name="amount" class="p-2 border rounded-md w-full"
+                   placeholder="Ingrese el monto">
+        </div>
+
+        <div class="flex justify-center">
+            <button id="searchBtn" onclick="showConfirmation();"
+                    class="px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 w-full">
+                <i class="">Generar Duplicado</i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="confirmModal"
+     class="fixed inset-0 z-50 flex items-center justify-center hidden bg-gray-800 bg-opacity-50">
+    <div class="bg-white p-6 rounded-md shadow-lg w-11/12 max-w-lg">
+        <h2 class="text-lg font-semibold mb-4">Confirmar Generación de Duplicado</h2>
+        <p class="mb-2">Estudiante: <span id="confirmStudent" class="font-medium"></span></p>
+        <p class="mb-4">Monto (S/): <span id="confirmAmount" class="font-medium"></span></p>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-2">
+            <button onclick="sendCreateFotochecks('false');"
+                    class="px-4 py-2 bg-green-500 text-white rounded-md transition-colors duration-300 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                Confirmar
+            </button>
+            <button onclick="closeConfirmation();"
+                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md mt-2 md:mt-0 transition-colors duration-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+</div>
+
+
+<script src="{% static 'vendors/toastr/toastr.min.js' %}"></script>
+<!-- jQuery -->
+<script src="{% static 'vendors/jquery/jquery.min.js' %}"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script type="text/javascript">
+    // Funciones para select2
+
+    $(document).ready(function () {
+        $('.js-example-placeholder-single').select2({
+            placeholder: "Nombre, apellido o DNI",
+            allowClear: true,
+            minimumInputLength: 1,
+            openOnEnter: true,
+            openOnFocus: true,
+            language: {
+                noResults: function () {
+                    return "No se encontro al alumno";
+                },
+                inputTooShort: function () {
+                    return ''; // Disable the "Please enter 3 or more characters" message
+                },
+            }
+        });
+    });
+    $(document).on('select2:open', () => {
+        document.querySelector('.select2-search__field').focus();
+    });
+</script>
+<script type="application/javascript">
+    function closeConfirmation() {
+        document.getElementById('confirmModal').classList.add('hidden');
+    }
+
+    function showConfirmation() {
+        let studentSelect = document.getElementById('student');
+        let studentValue = studentSelect.options[studentSelect.selectedIndex].text;
+        let amountValue = document.getElementById('amount').value;
+
+        if (studentValue.trim() === '' || amountValue.trim() === '') {
+            {#alert('Por favor complete todos los campos.');#}
+            toastr["warning"]('Complete todos los campos', 'Error')
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "500",
+                "hideDuration": "1000",
+                "timeOut": "1000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            return;
+        }
+
+        if (amountValue && !/^(\d+(\.\d{1,2})?)$/.test(amountValue)) {
+            alert('Ingrese un monto válido. Ejemplo válido: 12.50');
+            return;
+        }
+
+        document.getElementById('confirmStudent').textContent = studentValue;
+        document.getElementById('confirmAmount').textContent = amountValue;
+        document.getElementById('confirmModal').classList.remove('hidden');
+    }
+
+    function sendCreateFotochecks(section_id) {
+        const url = "{% url 'assistance_app:send_create_fotocheck' slug=school.slug %}"
+        let dataStudent = section_id;
+        let manyStudent = true;
+        let amount = 0;
+
+        if (section_id === 'false') {
+            dataStudent = document.getElementById("student").value;
+            manyStudent = false;
+
+            let studentValue = document.getElementById('student').value;
+            let amountValue = document.getElementById('amount').value;
+
+            if (studentValue.trim() === '' || amountValue.trim() === '') {
+                {#alert('Por favor complete todos los campos.');#}
+                toastr["warning"]('Complete todos los campos', 'Error')
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+                return;
+            }
+
+            if (amountValue && !/^(\d+(\.\d{1,2})?)$/.test(amountValue)) {
+                alert('Ingrese un monto válido. Ejemplo válido: 12.50');
+                return;
+            }
+
+            amount = amountValue;
+            closeConfirmation();
+            document.getElementById('amount').value = '';
+        }
+
+        const data = {
+            section: dataStudent,
+            manyStudent: manyStudent,
+            amount: amount
+        };
+
+        // let dniStudent = document.getElementById("student").value
+        $("#student").val('').trigger('change');
+
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            data: {'data': JSON.stringify(data)},
+            success: function (response) {
+                let link = document.createElement('a');
+                link.href = "data:application/pdf;base64," + response.student_fotochecks_PDF;
+                link.download = "Fotochecks.pdf";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                toastr["success"]("Duplicado Creado", "Éxito")
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "3000",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+            },
+            error: function (response) {
+                toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                toastr.options = {
+                    "closeButton": false,
+                    "debug": false,
+                    "newestOnTop": false,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "1000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+            }
+        });
+    }
+
+</script>
+
+</body>
+</html>

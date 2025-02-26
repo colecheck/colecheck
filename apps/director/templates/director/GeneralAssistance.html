@@ -1,0 +1,585 @@
+{% extends "director/Layout.html" %}
+{% block content %}
+    {% load in_month %}
+    {% load in_date_range %}
+    <div id="container" class="lg:p-8 p-3">
+        <div class="flex flex-wrap gap-6 pb-6">
+            <div id="levels_select" class="flex flex-col gap-4 w-[9rem]" {% if only_level %}
+                 style="display: none;"  {% endif %}>
+                <label for="level">Selecciona el <strong>Nivel:</strong></label>
+                <select id="level" class="p-2 border-2 rounded-md" name="level"
+                        onchange="if (this.selectedIndex) updateFilteredData();">
+                    <option class="p-2" value="all">--Todos--</option>
+                    {% for lev in levels %}
+                        <option class="p-2" value="{{ lev.name }}">{{ lev.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex flex-col gap-4 w-[10rem]">
+                <label for="cars">Selecciona el <strong>Grado:</strong></label>
+                <select id="grade" class="p-2 border-2 rounded-md" {% if not one_level %}disabled{% endif %}
+                        onchange="if (this.selectedIndex) updateFilteredData();">
+                    <option value="all">--Todos--</option>
+                    {% if one_level %}
+                        {% for grad in ed_level.grades.all %}
+                            <option value="{{ grad.name }}">{{ grad.name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div id="sections_select" class="flex flex-col gap-4 w-[10rem]" {% if only_section %}
+                 style="display: none;"  {% endif %}>
+                <label for="cars">Selecciona la <strong>Sección:</strong></label>
+                <select id="section" class="p-2 border-2 rounded-md" {% if not one_grade %}disabled{% endif %}
+                        onchange="if (this.selectedIndex) updateFilteredData();">
+                    <option value="all">--Todas--</option>
+                    {% if one_grade %}
+                        {% for sect in grade.sections.all %}
+                            <option value="{{ sect.name }}">{{ sect.name }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div id="month-selector" class="flex flex-col gap-4 w-[10rem]" {% if dates_type != "month" %}
+                 style="display:none;" {% endif %}>
+                <label for="cars">Selecciona el <strong>Mes:</strong></label>
+                <select id="month" class="p-2 border-2 rounded-md"
+                        onchange="if (this.selectedIndex) updateFilteredData();">
+                    <option value="all">--Todos--</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div id="daterange-picker" {% if dates_type != "daterange" %} style="display:none;" {% endif %}
+                 class="flex gap-2">
+                <div class="flex flex-col gap-4 w-[10rem]">
+                    <h2>Rango: <strong>Inicio</strong></h2>
+                    <input id="daterange_start" name="daterange_start" type="date" value="{{ daterange_start }}"
+                           class="p-2 border border-gray-300 rounded-lg bg-gray-50"
+                           onchange="if (this.selectedIndex) updateFilteredData()" ;>
+                </div>
+                <div class="flex flex-col gap-4 w-[10rem]">
+                    <h2>Rango: <strong>Fin</strong></h2>
+                    <input id="daterange_end" name="daterange_end" type="date" value="{{ daterange_end }}"
+                           class="p-2 border border-gray-300 rounded-lg bg-gray-50"
+                           onchange="if (this.selectedIndex) updateFilteredData();">
+                </div>
+            </div>
+            <div>
+                <button type="button" id="date-toggler" onclick="toggleDateType();"
+                        class="bg-yellow-500 disabled:opacity-75 text-white font-bold py-2 px-4 rounded">Por Fechas
+                </button>
+            </div>
+
+            <div>
+                <button id="download_report" href="#"
+                        class="bg-green-500 disabled:opacity-75 text-white font-bold py-2 px-4 rounded" target="_blank"
+                        download="ejemplo_excel.xlsx"
+                        {% if not one_month and not one_section %}disabled{% endif %}>Descargar Excel
+                </button>
+            </div>
+        </div>
+        <div>
+            <h2><strong>Registro de Asistencia General de Entrada y Salida</strong></h2>
+            <div id="custom-table" class="m-4 overflow-y-auto overflow-x-auto">
+                <table class="w-full border border-solid border-spacing-2 rounded-md overflow-auto">
+                    <tr class="border-2 px-2">
+                        <th class="px-2">Nro</th>
+                        <th class="px-2 sticky left-0 bg-white">Nombre</th>
+                        <th class="px-2">Clase</th>
+                        <th></th>
+                        {% for assistance in assistances %}
+                            <th class="px-2">{{ assistance.date.day }}/{{ assistance.date.month }}</th>
+                        {% endfor %}
+                    </tr>
+                    {% for student in students %}
+                        <tr {% if forloop.counter|divisibleby:2 %} class="bg-gray-100" {% endif %}>
+                            <td class="px-3 border">{{ students.start_index|add:forloop.counter0 }}</td>
+                            <td class="px-3 border sticky left-0 bg-white text-sm">
+                                {{ student.last_name.split.0 }}
+                                {{ student.first_name.split.0 }}
+                            </td>
+                            <td class="px-3 border">{{ student.grade.short_name }} {{ student.section.name }}</td>
+                            <td class="px-3 border">
+                                <div>
+                                    <p class="font-semibold text-sm">Ingreso</p>
+                                    {% if school.is_double_turn %}
+                                        <p class="font-semibold text-sm">Ingreso 2</p>
+                                    {% else %}
+                                        <p class="font-semibold text-sm">Salida</p>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            {% if dates_type == "month" %}
+                                {% if one_month %}
+                                    {% for assistance in student.general_assistances.all|in_month:month %}
+                                        <td class="px-3 border">
+                                            <div class="text-center">
+                                                <div class="p-1 flex items-center justify-center">
+                                                    {% if assistance.state == "Presente" %}
+                                                        <p class="text-xs text-green-500">{{ assistance.time }}</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                    {% elif assistance.state == "Tardanza" %}
+                                                        <p class="text-xs text-orange-500">{{ assistance.time }}</p>
+                                                        <span class="material-symbols-sharp text-orange-500">check_circle</span>
+                                                    {% elif assistance.state == "Tardanza Justificada Pedida" %}
+                                                        <p class="text-xs text-green-500"> - </p>
+                                                    {% elif assistance.state == "Tardanza Justificada Registrada" %}
+                                                        <p class="text-xs text-green-500">{{ assistance.time }}</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                    {% elif assistance.state == "Falta" %}
+                                                        <p class="text-xs text-red-500">FALTA</p>
+                                                    {% elif assistance.state == "Falta Justificada" %}
+                                                        <p class="text-xs text-green-500">Falta Justificada</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                    {% else %}
+                                                        <p class="text-xs text-black-500"> - </p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="p-1 flex items-center justify-center">
+                                                    {% if assistance.exit_state == "Salio" %}
+                                                        <p class="text-xs text-green-500">{{ assistance.exit_time }}</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+
+                                                    {% elif assistance.exit_state == "Aun no salio" %}
+                                                        <p class="text-xs text-red-500">Sin registrar</p>
+                                                        <span class="material-symbols-sharp text-red-500">error</span>
+                                                    {% else %}
+                                                        <p class="text-xs text-black-500"> - </p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for assistance in student.general_assistances.all %}
+                                        <td class="px-3 border">
+                                            <div class="text-center">
+                                                <div class="p-1 flex items-center justify-center">
+                                                    {% if assistance.state == "Presente" %}
+                                                        <p class="text-xs text-green-500">{{ assistance.time }}</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                    {% elif assistance.state == "Tardanza" %}
+                                                        <p class="text-xs text-orange-500">{{ assistance.time }}</p>
+                                                        <span class="material-symbols-sharp text-orange-500">check_circle</span>
+                                                    {% elif assistance.state == "Tardanza Justificada Pedida" %}
+                                                        <p class="text-xs text-green-500"> - </p>
+                                                    {% elif assistance.state == "Tardanza Justificada Registrada" %}
+                                                        <p class="text-xs text-green-500">{{ assistance.time }}</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                    {% elif assistance.state == "Falta" %}
+                                                        <p class="text-xs text-red-500">FALTA</p>
+                                                    {% elif assistance.state == "Falta Justificada" %}
+                                                        <p class="text-xs text-green-500">Falta Justificada</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                    {% else %}
+                                                        <p class="text-xs text-black-500"> - </p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="p-1 flex items-center justify-center">
+                                                    {% if assistance.exit_state == "Salio" %}
+                                                        <p class="text-xs text-green-500">{{ assistance.exit_time }}</p>
+                                                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+
+                                                    {% elif assistance.exit_state == "Aun no salio" %}
+                                                        <p class="text-xs text-red-500">Sin registrar</p>
+                                                        <span class="material-symbols-sharp text-red-500">error</span>
+                                                    {% else %}
+                                                        <p class="text-xs text-black-500"> - </p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    {% endfor %}
+                                {% endif %}
+                            {% else %}
+                                {% for assistance in student.general_assistances.all|one_more:daterange_start|in_date_range:daterange_end %}
+                                    <td class="px-3 border">
+                                        <div class="text-center">
+                                            <div class="p-1 flex items-center justify-center">
+                                                {% if assistance.state == "Presente" %}
+                                                    <p class="text-xs text-green-500">{{ assistance.time }}</p>
+                                                    <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                {% elif assistance.state == "Tardanza" %}
+                                                    <p class="text-xs text-orange-500">{{ assistance.time }}</p>
+                                                    <span class="material-symbols-sharp text-orange-500">check_circle</span>
+                                                {% elif assistance.state == "Tardanza Justificada Pedida" %}
+                                                    <p class="text-xs text-green-500"> - </p>
+                                                {% elif assistance.state == "Tardanza Justificada Registrada" %}
+                                                    <p class="text-xs text-green-500">{{ assistance.time }}</p>
+                                                    <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                {% elif assistance.state == "Falta" %}
+                                                    <p class="text-xs text-red-500">FALTA</p>
+                                                {% elif assistance.state == "Falta Justificada" %}
+                                                    <p class="text-xs text-green-500">Falta Justificada</p>
+                                                    <span class="material-symbols-sharp text-green-500">check_circle</span>
+                                                {% else %}
+                                                    <p class="text-xs text-black-500"> - </p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="p-1 flex items-center justify-center">
+                                                {% if assistance.exit_state == "Salio" %}
+                                                    <p class="text-xs text-green-500">{{ assistance.exit_time }}</p>
+                                                    <span class="material-symbols-sharp text-green-500">check_circle</span>
+
+                                                {% elif assistance.exit_state == "Aun no salio" %}
+                                                    <p class="text-xs text-red-500">Sin registrar</p>
+                                                    <span class="material-symbols-sharp text-red-500">error</span>
+                                                {% else %}
+                                                    <p class="text-xs text-black-500"> - </p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="pagination">
+            <p class="text-md my-4 text-blue-500 font-bold ms-2">Pagina {{ students.number }}
+                de {{ students.paginator.num_pages }}.</p class="text-md my-4">
+            <div class="step-links flex items-center gap-1">
+                {% if students.has_previous %}
+                    <a href="#"
+                       onclick="addParameterToURL('page', '{{ students.previous_page_number }}'); return false;"
+                       class="flex items-center p-2 text-md text-blue-500 font-bold">
+                        <i class="material-symbols-sharp">arrow_back_ios</i>
+                    </a>
+                    <a href="#" onclick="addParameterToURL('page', '1'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">1</a>
+                {% endif %}
+                {% if students.number > 3 %}
+                    <span class="text-lg text-blue-500 mx-2">...</span>
+                {% endif %}
+                {% if students.number > 2 %}
+                    <a href="#"
+                       onclick="addParameterToURL('page', '{{ students.previous_page_number }}'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">
+                        {{ students.number|add:"-1" }}
+                    </a>
+                {% endif %}
+                <span class="w-[2.6rem] h-[2rem] text-center current bg-blue-500 text-white font-bold text-md rounded-md">
+                {{ students.number }}
+            </span>
+                {% if students.number|add:"1" < students.paginator.num_pages %}
+                    <a href="#" onclick="addParameterToURL('page', '{{ students.next_page_number }}'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">
+                        {{ students.number|add:"1" }}
+                    </a>
+                {% endif %}
+                {% if students.number|add:"2" < students.paginator.num_pages %}
+                    <span class="text-lg text-blue-500 mx-2">...</span>
+                {% endif %}
+                {% if students.has_next %}
+                    <a href="#" onclick="addParameterToURL('page', '{{ students.paginator.num_pages }}'); return false;"
+                       class="w-[2.6rem] h-[2rem] text-center block text-md rounded-md bg-blue-100 text-blue-500 font-bold">{{ students.paginator.num_pages }}</a>
+                    <a href="#" onclick="addParameterToURL('page', '{{ students.next_page_number }}'); return false;"
+                       class="flex items-center p-2 text-md text-blue-500 font-bold">
+                        <i class="material-symbols-sharp">arrow_forward_ios</i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <br>
+        <hr>
+        <br>
+        <canvas id="attendanceChart"></canvas>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="application/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+
+        let dates_type = urlParams.get('dates-type');
+
+
+        if (dates_type && dates_type === "daterange") {
+            document.getElementById('date-toggler').innerText = "Por Mes";
+            document.getElementById("month-selector").style.display = "none";
+            document.getElementById("daterange-picker").style.display = "flex";
+        } else {
+            dates_type = "month"
+            document.getElementById('date-toggler').innerText = "Por Fechas";
+            document.getElementById("month-selector").style.display = "flex";
+            document.getElementById("daterange-picker").style.display = "none";
+        }
+
+        let level = urlParams.get('level');
+
+        if (document.getElementById("levels_select").style.display == "none") {
+            level = "{{ ed_level.name }}";
+        }
+        const grade = urlParams.get('grade');
+        let section = urlParams.get('section');
+        if (document.getElementById("sections_select").style.display == "none") {
+            section = "{{ section.name }}";
+        }
+        const month = urlParams.get('month');
+        const daterange_start = urlParams.get('daterange-start');
+        const daterange_end = urlParams.get('daterange-end');
+
+        var d = new Date();
+        var n = d.getMonth() + 1;
+
+        if (level) {
+            document.getElementById('level').value = level;
+        } else {
+            document.getElementById('level').value = "all";
+        }
+        if (grade && level) {
+            document.getElementById('grade').value = grade;
+        } else {
+            document.getElementById('grade').value = "all";
+        }
+        if (section && grade && level) {
+            document.getElementById('section').value = section;
+        } else {
+            document.getElementById('section').value = "all";
+        }
+        if (daterange_start) {
+            document.getElementById('daterange_start').value = daterange_start;
+            document.getElementById('daterange_end').value = daterange_end;
+
+        } else {
+            document.getElementById('daterange_start').valueAsDate = new Date(d.getFullYear(), d.getMonth(), 1);
+            document.getElementById('daterange_end').valueAsDate = new Date(d.getFullYear(), (d.getMonth() + 1) % 12, 0);
+        }
+        if (month) {
+            document.getElementById('month').value = month;
+        } else {
+            document.getElementById('month').value = n;
+        }
+
+        function toggleDateType() {
+            if (dates_type === "daterange") {
+                dates_type = "month";
+            } else {
+                dates_type = "daterange";
+            }
+            updateFilteredData();
+        }
+
+        function updateFilteredData() {
+            var select_level = document.getElementById('level').value;
+
+            // Si solo existe un nivel en el colegio
+            if (document.getElementById("levels_select").style.display == "none") {
+                select_level = "{{ed_level.name}}";
+            }
+
+            var select_grade = document.getElementById('grade').value;
+            var select_section = document.getElementById('section').value;
+
+            if (document.getElementById("sections_select").style.display == "none") {
+                select_section = "{{section.name}}";
+            }
+            var select_month;
+            var select_daterange_start;
+            var selectDaterangeStartAsDate;
+            var select_daterange_end;
+            var selectDaterangeEndAsDate;
+
+
+            if (dates_type === "month") {
+                select_month = document.getElementById('month').value;
+            } else {
+                select_daterange_start = document.getElementById('daterange_start').value;
+                selectDaterangeStartAsDate = document.getElementById('daterange_start').valueAsDate;
+                select_daterange_end = document.getElementById('daterange_end').value;
+                selectDaterangeEndAsDate = document.getElementById('daterange_end').valueAsDate;
+
+            }
+            var url = '{% url "assistance_app:general_assistance_report" slug=school.slug %}?'
+            if (select_level != "all") {
+                url += "level=" + select_level + '&';
+            }
+            console.log(`${select_level} and ${level}`)
+
+            if (select_level == level && select_grade != "all" && select_level != "all") {
+                url += "grade=" + select_grade + '&';
+            }
+            if (select_level == level && select_grade == grade && select_level != "all" && select_grade != "all" && select_section != "all") {
+                url += "section=" + select_section + '&';
+            }
+            if (dates_type) {
+                url += "dates-type=" + dates_type + '&';
+            } else {
+                url += "dates-type=month&";
+            }
+            if (dates_type == "month") {
+                if (select_month != n) {
+                    url += "month=" + select_month + '&';
+                }
+            } else {
+                if (select_daterange_start) {
+                    if (daterange_start !== select_daterange_start && selectDaterangeEndAsDate < selectDaterangeStartAsDate) {
+                        url += "daterange-start=" + select_daterange_start + '&';
+                        url += "daterange-end=" + select_daterange_start + '&';
+                    } else if (daterange_end !== select_daterange_end && selectDaterangeStartAsDate > selectDaterangeEndAsDate) {
+                        url += "daterange-start=" + select_daterange_end + '&';
+                        url += "daterange-end=" + select_daterange_end + '&';
+                    } else {
+                        url += "daterange-start=" + select_daterange_start + '&';
+                        url += "daterange-end=" + select_daterange_end + '&';
+                    }
+                }
+            }
+
+
+            window.location.href = url;
+        }
+
+        // Event listeners for select inputs
+        document.getElementById('level').addEventListener('change', updateFilteredData);
+        document.getElementById('grade').addEventListener('change', updateFilteredData);
+        document.getElementById('section').addEventListener('change', updateFilteredData);
+        document.getElementById('month').addEventListener('change', updateFilteredData);
+        document.getElementById('daterange_start').addEventListener('change', updateFilteredData);
+        document.getElementById('daterange_end').addEventListener('change', updateFilteredData);
+
+
+        document.getElementById('download_report').addEventListener('click', function (event) {
+            // Evitar que el enlace lleve a otra página
+            event.preventDefault();
+            let url = '{% url "assistance_app:download_general_assistance" slug=school.slug %}?'
+            const currentURL = new URL(window.location.href);
+            const params = new URLSearchParams(currentURL.search);
+            url += params.toString();
+            //console.log(url)
+            //this.href = url;
+            //this.click();
+            const clicEvent = new MouseEvent('click');
+            // Crear un enlace temporal
+            const enlaceTemporal = document.createElement('a');
+            enlaceTemporal.href = url;
+            enlaceTemporal.download = 'ejemplo_excel.xlsx';
+
+            // Despachar el evento de clic en el enlace temporal
+            enlaceTemporal.dispatchEvent(clicEvent);
+        });
+
+        function addParameterToURL(paramName, paramValue) {
+
+            var currentURL = window.location.href;
+
+            // Check if the parameter already exists in the URL
+            if (currentURL.indexOf(paramName + '=') !== -1) {
+                // Update the existing parameter value
+                var regex = new RegExp('(' + paramName + '=.*?)(&|$)');
+                var newURL = currentURL.replace(regex, paramName + '=' + encodeURIComponent(paramValue) + '$2');
+            } else {
+                // Check if there are already parameters in the URL
+                var separator = currentURL.indexOf('?') !== -1 ? '&' : '?';
+
+                // Add the new parameter to the URL
+                var newURL = currentURL + separator + encodeURIComponent(paramName) + '=' + encodeURIComponent(paramValue);
+            }
+            // Redirect to the new URL
+            window.location.href = newURL;
+        }
+
+        /*-----------------------Table movement----------------------------*/
+        const table = document.getElementById('custom-table');
+        let isMouseDown = false;
+        let startX;
+        let startY;
+        let scrollLeft;
+        let scrollTop;
+
+        table.addEventListener('mousedown', function (event) {
+            isMouseDown = true;
+            startX = event.pageX;
+            //startY = event.pageY;
+            scrollLeft = table.scrollLeft;
+            //scrollTop = table.scrollTop;
+            {#console.log(table.scrollLeft)#}
+        });
+
+        table.addEventListener('mouseleave', function () {
+            isMouseDown = false;
+        });
+
+        table.addEventListener('mouseup', function () {
+            isMouseDown = false;
+        });
+
+        table.addEventListener('mousemove', function (event) {
+            console.log("mousemove")
+            if (!isMouseDown) return;
+            const x = event.pageX;
+            //const y = event.pageY;
+            const deltaX = x - startX;
+            //const deltaY = y - startY;
+            table.scrollLeft = scrollLeft - deltaX;
+            // console.log(table.scrollLeft)
+            //table.scrollTop = scrollTop - deltaY;
+        });
+
+        let ctx = document.getElementById('attendanceChart').getContext('2d');
+        let data = {
+            labels: JSON.parse('{{ attendance_dates|escapejs }}'),
+            datasets: [
+                {
+                    label: 'Temprano',
+                    backgroundColor: 'rgba(0, 255, 0, 0.8)',
+                    borderColor: 'rgba(0, 255, 0, 1)',
+                    borderWidth: 1,
+                    data: JSON.parse('{{ attendance_presente|escapejs }}')
+                },
+                {
+                    label: 'Tardanza',
+                    backgroundColor: 'rgba(255, 151, 0, 0.8)',
+                    borderColor: 'rgba(255, 151, 0, 1)',
+                    borderWidth: 1,
+                    data: JSON.parse('{{ attendance_tardanza|escapejs }}')
+                },
+                {
+                    label: 'Falta',
+                    backgroundColor: 'rgba(255, 0, 0, 0.8)',
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderWidth: 1,
+                    data: JSON.parse('{{ attendance_falta|escapejs }}')
+                }
+            ]
+        };
+
+        let attendanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Reporte de Asistencia General'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+{% endblock js %}

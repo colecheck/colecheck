@@ -1,0 +1,64 @@
+{% extends "teacher/TeacherLayout.html" %}
+
+{% block content %}
+
+<div id="container" class="lg:p-12 p-3">
+    <h2 class="text-xl mb-3"><strong>Asistencias de Hoy</strong></h2>
+    {% for assistance in assistances %}
+    <div  class="lg:w-[50%] w-[100%]">
+        <div id="schedule-card" class="w-[100%] mt-2 flex justify-between font-semibold bg-blue-500 rounded-lg px-3 py-4 text-white">
+            <div class="flex gap-4">
+                <p class="font-bold lg:text-base text-sm">{{ assistance.block.course.grade.short_name }}{% if assistance.block.course.section %}{{ assistance.block.course.section.name }}{% endif %} - {{ assistance.block.course.name }}</p>
+                <p class="lg:text-base text-sm">{{ assistance.block.time_init }} - {{ assistance.block.time_end }}</p>
+            </div>
+            <div class="">
+                <a href="{% url 'assistance_app:edit_course_assistance' slug=school.slug pk=assistance.id %}" class="rounded bg-orange-500 px-3 py-2 text-white text-base">Editar</a>
+            </div>
+        </div>
+    </div>
+    {% endfor%}
+    {% for block in blocks %}
+    <div  class="lg:w-[50%] w-[100%]">
+        <div id="schedule-card" class="w-[100%] mt-2 flex justify-between font-semibold bg-blue-500 rounded-lg px-3 py-4 text-white">
+            <div class="flex gap-4">
+                <p class="font-bold lg:text-base text-sm">{{ block.course.grade.short_name }}{% if block.course.section %}{{ block.course.section.name }}{% endif %} - {{ block.course.name }}</p>
+                <p class="lg:text-base text-sm">{{ block.time_init }} - {{ block.time_end }}</p>
+            </div>
+            <div class="">
+                <a href="#" onclick="startAssistanceSession('{{ block.id }}');" class="rounded bg-green-500 px-3 py-2 text-white text-base">Iniciar</a>
+            </div>
+        </div>
+    </div>
+    {% endfor%}
+</div>
+
+{% endblock content %}
+
+
+{% block js %}
+
+<script type="application/javascript">
+
+    function startAssistanceSession(blockId) {
+        const url = "{% url 'assistance_app:start_assistance_session' slug=school.slug %}"
+        const data = {
+            block: blockId 
+        }
+        $.ajax({
+            url: url,
+            async: true,
+            dataType: 'json',
+            type: 'POST',
+            data: {'data': JSON.stringify(data)},
+            success: function (response) {
+                const assistanceURL = response.assistance_url
+                window.location.href = assistanceURL
+            }
+        });
+    }
+
+
+</script>
+
+
+{% endblock js %}

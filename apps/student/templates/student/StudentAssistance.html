@@ -1,0 +1,144 @@
+{% extends "student/StudentLayout.html" %}
+
+{% block content %}
+<div id="container" class="container p-8">
+    <h1 class="font-bold text-2xl mb-2">Asistencia</h1>
+    <div>
+        <div class="flex flex-col gap-4 w-[10rem]">
+            <label for="cars">Selecciona el mes:</label>
+            <select class="p-2 border-2 rounded-md">
+                <option value="Enero">Enero</option>
+                <option value="Febrero">Febrero</option>
+                <option value="Marzo">Marzo</option>
+                <option value="Abril">Abril</option>
+            </select>
+        </div>
+    </div>
+    <div class="">
+        <h2 class="font-bold my-4">Asistencia a la clase</h2>
+        <table class="border border-solid border-spacing-2 rounded-md ">
+            <tr class="border-2 px-2">
+                <th class="px-2">Horario</th>
+                <th>11</th>
+                <th>12</th>
+                <th>13</th>
+                <th>14</th>
+                <th>15</th>
+                <th>16</th>
+                <th>17</th>
+                <th>18</th>
+                <th>19</th>
+            </tr>
+            <tr>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <p class="font-semibold">Hora de entrada</p>
+                        <p class="text-xs">7.00am - 7.50am</p>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <div class="p-1 text-center justify-center">
+                            <p class="text-xs text-green-500">07:30am</p>
+                            <span class="material-symbols-sharp text-green-500">check_circle</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <div class="p-1 text-center justify-center">
+                            
+                            <p class="text-xs text-orange-500">07:55am</p>
+                            <span class="material-symbols-sharp text-orange-500">error</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="p-1 text-center">
+                        <div class="p-1 flex items-center justify-center">
+                            <span class="material-symbols-sharp text-red-500">cancel</span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <p class="text-xs">7.00am - 8.50am</p>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="p-1 text-center">
+                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="p-1 text-center">
+                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="p-1 text-center">
+                        <span class="material-symbols-sharp text-red-500">minimize</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <p class="text-xs">7.00am - 8.50am</p>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <div class="p-1 flex items-center justify-center">
+                            <span class="material-symbols-sharp text-green-500">check_circle</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="p-1 text-center">
+                        <span class="material-symbols-sharp text-green-500">check_circle</span>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="p-1 text-center">
+                        <span class="material-symbols-sharp text-red-500">minimize</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <p class="font-semibold">Hora de Salida</p>
+                        <p class="text-xs">3.50pm</p>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <div class="p-1 text-center justify-center">
+                            
+                            <p class="text-xs text-green-500">15:45pm</p>
+                            <span class="material-symbols-sharp text-green-500">check_circle</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="text-center">
+                        <div class="p-1 text-center justify-center">
+                            <p class="text-xs"></p>
+                            <span class="material-symbols-sharp text-red-500">error</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-3 border">
+                    <div class="p-1 text-center">
+                        <span class="material-symbols-sharp text-red-500">minimize</span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
