@@ -23,3 +23,18 @@ python manage.py createsuperuser
 >>> superuser.set_password("admin5524") 
 >>> superuser.save()
 ```
+
+```sh
+git add .
+git commit -m "Cambios de prueba en test"
+git push origin test
+
+
+git checkout develop
+git merge test
+git push origin develop
+
+git checkout master
+git merge develop
+git push origin master
+```
