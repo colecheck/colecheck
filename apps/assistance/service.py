@@ -203,21 +203,21 @@ class FactoryFotocheck():
             except ModuleNotFoundError:
                 pass
 
-            mask = PILImage.new("L", image.size, 0)
-            draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0) + image.size, fill=255)
+            #mask = PILImage.new("L", image.size, 0)
+            #draw = ImageDraw.Draw(mask)
+            #draw.ellipse((0, 0) + image.size, fill=255)
 
-            rounded_image = PILImage.new("RGBA", image.size)
-            rounded_image.paste(image, (0, 0), mask=mask)
+            #rounded_image = PILImage.new("RGBA", image.size)
+            #rounded_image.paste(image, (0, 0), mask=mask)
 
-            rounded_image_reader = ImageReader(rounded_image)
+            #rounded_image_reader = ImageReader(rounded_image)
 
             # logo_path = os.path.join(static_dir, 'img',"logo.png")
             c.drawImage(background_path, x, y, width=self.cell_width, height=self.cell_height,
                         preserveAspectRatio=True, anchor='c')
             # c.drawImage(student_icon_path, x + self.cell_width/4, y + self.cell_height/2, width=self.cell_width/3, height=self.cell_width/3, mask='auto')
-            c.drawImage(rounded_image_reader, x + self.cell_width / 3.1, y + self.cell_height / 1.735,
-                        width=self.cell_width / 2.82, height=self.cell_width / 2.82, mask='auto')
+            #c.drawImage(rounded_image_reader, x + self.cell_width / 3.1, y + self.cell_height / 1.735,
+            #            width=self.cell_width / 2.82, height=self.cell_width / 2.82, mask='auto')
 
             # c.drawImage(logo_path, x+ self.cell_width - 45 , y+ self.cell_height - 50, width = 35, height= 40, mask='auto')
             # c.restoreState()
@@ -236,27 +236,46 @@ class FactoryFotocheck():
             paragraph_first_name = Paragraph(first_name_data, styles['font-first-name'])
             paragraph_first_name.wrap(self.cell_width - 20,
                                       self.cell_height - 20)  # Ajustar el tamaño del área de texto
-            paragraph_first_name.drawOn(c, x + 10, y + self.cell_height / 1.95)
+            paragraph_first_name.drawOn(c, x + 10, y + self.cell_height / 1.28)
 
             paragraph_last_name = Paragraph(last_name_data, styles['font-last-name'])
             paragraph_last_name.wrap(self.cell_width - 20, self.cell_height - 20)
-            paragraph_last_name.drawOn(c, x + 10, y + self.cell_height / 2.18)
+            paragraph_last_name.drawOn(c, x + 10, y + self.cell_height / 1.38)
 
-            paragraph_code = Paragraph(code, styles['font-data'])
-            paragraph_code.wrap(self.cell_width - 20, self.cell_height - 20)
-            paragraph_code.drawOn(c, x + 93, y + self.cell_height / 2.575)
+            #paragraph_code = Paragraph(code, styles['font-data'])
+            #paragraph_code.wrap(self.cell_width - 20, self.cell_height - 20)
+            #paragraph_code.drawOn(c, x + 93, y + self.cell_height / 2.06)
 
             paragraph_level = Paragraph(level_data, styles['font-data'])
             paragraph_level.wrap(self.cell_width - 20, self.cell_height - 20)
-            paragraph_level.drawOn(c, x + 93, y + self.cell_height / 2.85)
+            paragraph_level.drawOn(c, x + 93, y + self.cell_height / 1.45)
 
             paragraph_grade = Paragraph(f'{name_grade_data}', styles['font-data'])
             paragraph_grade.wrap(self.cell_width - 20, self.cell_height - 20)
-            paragraph_grade.drawOn(c, x + 93, y + self.cell_height / 3.18)
+            paragraph_grade.drawOn(c, x + 93, y + self.cell_height / 1.55)
 
             paragraph_section = Paragraph(section_data, styles['font-data'])
             paragraph_section.wrap(self.cell_width - 20, self.cell_height - 20)
-            paragraph_section.drawOn(c, x + 93, y + self.cell_height / 3.60)
+            paragraph_section.drawOn(c, x + 93, y + self.cell_height / 1.65)
+
+            first_name_data = str(students_data[id_cell].first_name)
+            last_name_data = str(students_data[id_cell].last_name)
+            code = str(students_data[id_cell].dni)
+            level_data = str(students_data[id_cell].level.name)
+            grade_data = students_data[id_cell].grade.short_name
+            section_data = students_data[id_cell].section.name
+
+            data = f'{first_name_data}${last_name_data}${code}${grade_data}${section_data}'
+
+            data_encrypt = self.encrypt_data(data, 3)
+
+            qr_image_bytes = generate_qrcode(data=data_encrypt)
+            qr_image = utils.ImageReader(BytesIO(qr_image_bytes))
+
+            c.drawImage(qr_image, x + self.cell_width / 4.45, y + self.cell_height / 5,
+                        width=self.cell_width / 2 + 10,
+                        height=self.cell_width / 2 + 10, mask='auto')
+
 
             # Back
             # ***************************************************************************************************** #
@@ -270,6 +289,7 @@ class FactoryFotocheck():
             # background_path = os.path.join(static_dir, 'static', 'img', 'templates', f"{slug_cole}-back.png")
             background_path = self.get_file_path_from_url(fotocheck_template_back_url)
             # background_path = "back-bg.png"
+
 
             first_name_data = str(students_data[id_cell].first_name)
             last_name_data = str(students_data[id_cell].last_name)
@@ -288,13 +308,13 @@ class FactoryFotocheck():
             c.drawImage(background_path, x, y, width=self.cell_width, height=self.cell_height,
                         preserveAspectRatio=True, anchor='c')
 
-            c.drawImage(qr_image, x + self.cell_width / 4.45, y + self.cell_height / 2.56,
+            c.drawImage(qr_image, x + self.cell_width / 4.45, y + self.cell_height / 5,
                         width=self.cell_width / 2 + 10,
                         height=self.cell_width / 2 + 10, mask='auto')
 
             paragraph_code = Paragraph(code, styles['font-code'])
             paragraph_code.wrap(self.cell_width - 20, self.cell_height - 20)
-            paragraph_code.drawOn(c, x + 10, y + self.cell_height / 3)
+            paragraph_code.drawOn(c, x + 10, y + self.cell_height / 5.5)
 
             c.showPage()
             c.save()
@@ -556,13 +576,13 @@ class FactoryFotocheck():
             c.drawImage(background_path, x, y, width=new_width, height=new_height,
                         preserveAspectRatio=True, anchor='c')
 
-            c.drawImage(qr_image, x + new_width / 5.25, y + new_height / 2.14,
+            c.drawImage(qr_image, x + new_width / 5.25, y + new_height / 5,
                         width=new_width / 2 + 8,
                         height=new_width / 2 + 8, mask='auto')
 
             paragraph_code = Paragraph(code, styles['font-code'])
             paragraph_code.wrap(new_width - 20, new_height - 20)
-            paragraph_code.drawOn(c, x + 4, y + new_height / 2.46)
+            paragraph_code.drawOn(c, x + 4, y + new_height / 5.2)
 
             c.showPage()
             c.save()

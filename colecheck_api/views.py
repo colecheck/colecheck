@@ -498,6 +498,7 @@ def decifrar_dni(dni_cifrado):
 @permission_classes([IsAuthenticated])
 def register_assistance(request):
     try:
+        
         data = request.data
         dni = data.get('dni')
         type_assistance = data.get("type_assistance")
@@ -508,55 +509,58 @@ def register_assistance(request):
         school = request.user.auxiliar.school
         slug = school.slug
 
-        # dni_descifrado = decifrar_dni(dni)
-
         fake_request = HttpRequest()
         fake_request.method = 'POST'
-        # fake_request.POST['data'] = json.dumps({"dni": dni_descifrado})
+        fake_request.POST['data'] = json.dumps({"dni": dni})
 
         if not school.is_double_turn:
-            dni_descifrado = decifrar_dni(dni)
-            fake_request.POST['data'] = json.dumps({"dni": dni_descifrado})
+            print("Fake request data (single turn):", fake_request.POST['data'])
             if type_assistance == "entrance":
                 response = register_entrance_assistance(fake_request, slug)
+                print("Response from register_entrance_assistance:", response.content)
                 if response.status_code != 200:
                     return Response({
                         "error": "Alumno no encontrado"
                     }, status=status.HTTP_400_BAD_REQUEST)
             elif type_assistance == "exit":
                 response = register_exit_assistance(fake_request, slug)
+                print("Response from register_exit_assistance:", response.content)
                 if response.status_code != 200:
                     return Response({
                         "error": "Alumno no encontrado"
                     }, status=status.HTTP_400_BAD_REQUEST)
             else:
+                print("Tipo de Asistencia Invalido")
                 return Response({
                     "error": "Tipo de Asistencia Invalido"
                 }, status=status.HTTP_400_BAD_REQUEST)
         else:
-            fake_request.POST['data'] = json.dumps({"dni": dni})
+            print("Fake request data (double turn):", fake_request.POST['data'])
             if type_assistance == "entrance":
                 response = register_entrance_two_assistance(fake_request, slug)
+                print("Response from register_entrance_two_assistance:", response.content)
                 if response.status_code != 200:
                     return Response({
                         "error": "Alumno no encontrado"
                     }, status=status.HTTP_400_BAD_REQUEST)
             elif type_assistance == "exit":
                 response = register_exit_two_assistance(fake_request, slug)
+                print("Response from register_exit_two_assistance:", response.content)
                 if response.status_code != 200:
                     return Response({
                         "error": "Alumno no encontrado"
                     }, status=status.HTTP_400_BAD_REQUEST)
             else:
+                print("Tipo de Asistencia Invalido")
                 return Response({
                     "error": "Tipo de Asistencia Invalido"
                 }, status=status.HTTP_400_BAD_REQUEST)
-
         return Response({
             "success": "Alumno registrado",
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
+        print("Error:", str(e))
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
