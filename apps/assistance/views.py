@@ -1041,6 +1041,38 @@ def sendWhastAppMessage(phoneNumber, list_of_data):
 
 
 def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False, communicated=False):
+    current_time = datetime.now().strftime("%H:%M:%S")
+    communicated_msg = student.school.communicated if communicated else ''
+    
+    data = {
+        "time_assistance": current_time,
+        "student": f"{student.first_name} {student.last_name}",
+        "phoneNumber": student.parent.phone_number,
+        "type_assistance": attendance_type,
+        "classroom": in_classroom,
+        "isCommunicated": communicated,
+        "communicated": communicated_msg
+    }
+
+    url = "http://localhost:3000/wapp-web/senddReport"
+    headers = {'Content-Type': 'application/json'}
+
+
+    response = requests.post(url, data=json.dumps(data), headers=headers)
+    response.raise_for_status()
+        
+    print(f"🔹 Respuesta cruda de la API: {response.text}")  # Imprime la respuesta antes de intentar parsear JSON
+        
+    # Intentar obtener JSON solo si la respuesta tiene contenido
+    if response.text.strip():
+        print(f"✅ Mensaje enviado: {response.json()}")
+    else:
+        print("⚠️ La API respondió con un cuerpo vacío.")
+    
+
+
+
+    """
     ngrok_url = NgrokConfiguration.objects.first().host
     current_time = datetime.now().strftime("%H:%M:%S")
     communicated_msg = student.school.communicated if communicated else ''
@@ -1062,6 +1094,7 @@ def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False
     headers = {'Content-Type': 'application/json'}
     url = f'{ngrok_url}/asistencia-diario'
     requests.post(url, data=json_data, headers=headers)
+    """
 
 
 def open_general_assistance(general_assistance):
@@ -1094,9 +1127,24 @@ def register_entrance_assistance(request, slug):
     if request.method == 'POST':
         try:
             data_request = request.POST.get('data')
+            if data_request is None:
+                return JsonResponse({
+                    'title': 'Error',
+                    'content': 'No data received',
+                    'error': 'No data received'
+                }, status=HTTPStatus.BAD_REQUEST)
+            
             data = json.loads(data_request)
 
-            student_dni = str(data["dni"])
+
+            student_dni = str(data.get("dni"))
+            if not student_dni:
+                return JsonResponse({
+                    'title': 'Error',
+                    'content': 'DNI not found in data',
+                    'error': 'DNI not found'
+                }, status=HTTPStatus.BAD_REQUEST)
+
             student_obj = get_or_none(Student, dni=student_dni, school__slug=slug)
             current_date = timezone.now().date()
             current_time = timezone.now().time()
@@ -1105,7 +1153,7 @@ def register_entrance_assistance(request, slug):
                 return JsonResponse({
                     'title': 'Estudiante no encontrado',
                     'content': 'Registre en la base de datos',
-                    'error': 'Estudiante no econtrado'
+                    'error': 'Estudiante no encontrado'
                 }, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
             general_assistance = get_object_or_404(GeneralAssistance, school__slug=slug, date=current_date)
@@ -1148,10 +1196,9 @@ def register_entrance_assistance(request, slug):
                 'title': 'Error',
                 'content': 'QR inválido',
                 'error': str(e)
-            }, status=404)
+            }, status=HTTPStatus.BAD_REQUEST)
     else:
-        return JsonResponse({'error': 'Metodo no permitido'}, status=405)
-
+        return JsonResponse({'error': 'Metodo no permitido'}, status=HTTPStatus.METHOD_NOT_ALLOWED)
 
 # Vista POST, recibe el json con el DNI del estudiante y lo registra a la asistencia general de salida del dia actual
 @csrf_exempt
