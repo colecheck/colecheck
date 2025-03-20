@@ -1054,7 +1054,7 @@ def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False
         "communicated": communicated_msg
     }
 
-    url = "http://localhost:3000/wapp-web/senddReport"
+    url = "http://157.230.81.198:3000/wapp-web/senddReport"
     headers = {'Content-Type': 'application/json'}
 
 
