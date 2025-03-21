@@ -233,7 +233,7 @@ class FactoryFotocheck():
             else:
                 name_grade_data = f'{self.get_name_grade[grade_data]} ({grade_data})'
 
-            paragraph_first_name = Paragraph(first_name_data, styles['font-first-name'])
+            paragraph_first_name = Paragraph(last_name_data, styles['font-first-name'])
             paragraph_first_name.wrap(self.cell_width - 20,
                                       self.cell_height - 20)  # Ajustar el tamaño del área de texto
             paragraph_first_name.drawOn(c, x + 10, y + self.cell_height / 1.32)
@@ -254,9 +254,9 @@ class FactoryFotocheck():
             paragraph_grade.wrap(self.cell_width - 20, self.cell_height - 20)
             paragraph_grade.drawOn(c, x + 93, y + self.cell_height / 1.55)
 
-            paragraph_section = Paragraph(section_data, styles['font-data'])
-            paragraph_section.wrap(self.cell_width - 20, self.cell_height - 20)
-            paragraph_section.drawOn(c, x + 93, y + self.cell_height / 1.65)
+            #paragraph_section = Paragraph(section_data, styles['font-data'])
+            #paragraph_section.wrap(self.cell_width - 20, self.cell_height - 20)
+            #paragraph_section.drawOn(c, x + 93, y + self.cell_height / 1.65)
 
             first_name_data = str(students_data[id_cell].first_name)
             last_name_data = str(students_data[id_cell].last_name)
@@ -373,7 +373,9 @@ class FactoryFotocheck():
                             name_grade_data = self.get_name_grade_inicial[grade_data]
                         else:
                             name_grade_data = f'{self.get_name_grade[grade_data]} ({grade_data})'
-                        paragraph_first_name = Paragraph(first_name_data, styles['font-first-name'])
+
+
+                        paragraph_first_name = Paragraph(last_name_data, styles['font-first-name'])
                         paragraph_first_name.wrap(self.cell_width - 20,
                                                 self.cell_height - 20)  # Ajustar el tamaño del área de texto
                         paragraph_first_name.drawOn(c, x + 10, y + self.cell_height / 1.32)
@@ -394,9 +396,9 @@ class FactoryFotocheck():
                         paragraph_grade.wrap(self.cell_width - 20, self.cell_height - 20)
                         paragraph_grade.drawOn(c, x + 93, y + self.cell_height / 1.55)
 
-                        paragraph_section = Paragraph(section_data, styles['font-data'])
-                        paragraph_section.wrap(self.cell_width - 20, self.cell_height - 20)
-                        paragraph_section.drawOn(c, x + 93, y + self.cell_height / 1.65)
+                        #paragraph_section = Paragraph(section_data, styles['font-data'])
+                        #paragraph_section.wrap(self.cell_width - 20, self.cell_height - 20)
+                        #paragraph_section.drawOn(c, x + 93, y + self.cell_height / 1.65)
 
                         first_name_data = str(students_data[id_cell].first_name)
                         last_name_data = str(students_data[id_cell].last_name)
