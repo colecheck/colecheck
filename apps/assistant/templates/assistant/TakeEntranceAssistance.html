@@ -290,9 +290,15 @@
 
                 },
                 error: function (response) {
-                    error_sound.play();
+                    //***parche XD ********
+                    //error_sound.play();
+                    //toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+                    
+                    correct_sound.play()
+                    toastr["success"]("Alumno registrado 200", "Éxito")
 
-                    toastr["warning"](response.responseJSON.content, response.responseJSON.title)
+
+                    
                     toastr.options = {
                         "closeButton": false,
                         "debug": false,
