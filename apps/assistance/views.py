@@ -1040,8 +1040,9 @@ def sendWhastAppMessage(phoneNumber, list_of_data):
     return response.json()
 
 
-async def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False, communicated=False):
-    #print("Enviando mensaje de WhatsApp...: ", student.slug)
+
+def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False, communicated=False):
+    print("Enviando mensaje de WhatsApp...: ", student.school.slug)
     current_time = datetime.now().strftime("%H:%M:%S")
     communicated_msg = student.school.communicated if communicated else ''
 
@@ -1063,26 +1064,21 @@ async def send_whatsapp_message_to_parent(student, attendance_type, in_classroom
     else:
         print(f"⚠️ No se encontró una URL para el slug: {student.school.slug}")
         return
-
+    
     headers = {'Content-Type': 'application/json'}
 
-    # Enviar la solicitud de manera asíncrona
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post(url, data=json.dumps(data), headers=headers) as response:
-                response_text = await response.text()
-                print(f"🔹 Respuesta cruda de la API: {response_text}")
 
-                if response.status == 200 and response_text.strip():
-                    print(f"✅ Mensaje enviado: {response_text}")
-                else:
-                    print(f"⚠️ La API respondió con un error o un cuerpo vacío. Status: {response.status}")
-        except Exception as e:
-            print(f"❌ Error al enviar el mensaje: {e}")
-
-# Función para ejecutar la tarea asíncrona
-def send_whatsapp_message_to_parent_sync(student, attendance_type, in_classroom=False, communicated=False):
-    asyncio.run(send_whatsapp_message_to_parent(student, attendance_type, in_classroom, communicated))
+    response = requests.post(url, data=json.dumps(data), headers=headers)
+    response.raise_for_status()
+        
+    print(f"🔹 Respuesta cruda de la API: {response.text}")  # Imprime la respuesta antes de intentar parsear JSON
+        
+    # Intentar obtener JSON solo si la respuesta tiene contenido
+    if response.text.strip():
+        print(f"✅ Mensaje enviado: {response.json()}")
+    else:
+        print("⚠️ La API respondió con un cuerpo vacío.")
+    
 
 
     """
