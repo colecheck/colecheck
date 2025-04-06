@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, date, timedelta, time
 from http import HTTPStatus
-
+import aiohttp
 from django.db.models import Count, Q
 from django.http.response import HttpResponse
 from common.util.user_belongs_to_school import user_belongs_to_school
@@ -1040,10 +1040,11 @@ def sendWhastAppMessage(phoneNumber, list_of_data):
     return response.json()
 
 
-def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False, communicated=False):
+async def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False, communicated=False):
+    #print("Enviando mensaje de WhatsApp...: ", student.slug)
     current_time = datetime.now().strftime("%H:%M:%S")
     communicated_msg = student.school.communicated if communicated else ''
-    
+
     data = {
         "time_assistance": current_time,
         "student": f"{student.first_name} {student.last_name}",
@@ -1054,22 +1055,34 @@ def send_whatsapp_message_to_parent(student, attendance_type, in_classroom=False
         "communicated": communicated_msg
     }
 
-    url = "http://157.230.81.198:3000/wapp-web/senddReport"
+    # Determinar la URL según el slug
+    if student.school.slug == "ie-san-martin-de-porres-circa":
+        url = "http://157.230.81.198:3000/wapp-web/senddReport"
+    elif student.school.slug == "institucion-educativa-particular-nanterre":
+        url = "http://157.230.81.198:3001/wapp-web/senddReport"
+    else:
+        print(f"⚠️ No se encontró una URL para el slug: {student.school.slug}")
+        return
+
     headers = {'Content-Type': 'application/json'}
 
+    # Enviar la solicitud de manera asíncrona
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(url, data=json.dumps(data), headers=headers) as response:
+                response_text = await response.text()
+                print(f"🔹 Respuesta cruda de la API: {response_text}")
 
-    response = requests.post(url, data=json.dumps(data), headers=headers)
-    response.raise_for_status()
-        
-    print(f"🔹 Respuesta cruda de la API: {response.text}")  # Imprime la respuesta antes de intentar parsear JSON
-        
-    # Intentar obtener JSON solo si la respuesta tiene contenido
-    if response.text.strip():
-        print(f"✅ Mensaje enviado: {response.json()}")
-    else:
-        print("⚠️ La API respondió con un cuerpo vacío.")
-    
+                if response.status == 200 and response_text.strip():
+                    print(f"✅ Mensaje enviado: {response_text}")
+                else:
+                    print(f"⚠️ La API respondió con un error o un cuerpo vacío. Status: {response.status}")
+        except Exception as e:
+            print(f"❌ Error al enviar el mensaje: {e}")
 
+# Función para ejecutar la tarea asíncrona
+def send_whatsapp_message_to_parent_sync(student, attendance_type, in_classroom=False, communicated=False):
+    asyncio.run(send_whatsapp_message_to_parent(student, attendance_type, in_classroom, communicated))
 
 
     """

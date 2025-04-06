@@ -1,6 +1,10 @@
 # school-assistance
 
 ```sh
+
+pip install aiohttp
+
+
 pip install -r requirements.txt
 
 python manage.py makemigrations
